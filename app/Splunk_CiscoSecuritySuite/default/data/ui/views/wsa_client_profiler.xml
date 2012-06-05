@@ -1,0 +1,36 @@
+<form>
+	<label>Client Profiler</label>
+	<searchTemplate> eventtype="ironport_proxy" $cs_username$ $c_ip$ $usage$ | rex field=cs_url "\/\/(?P&lt;s_hostname&gt;[^/]*)" |  stats count by usage s_hostname,cs_username,x_acltag,sc_bytes, c_ip, x_webcat_code_full, _time</searchTemplate>
+  	<fieldset>
+		<input type="text" token="cs_username">
+			<label>Username</label>
+			<seed>*</seed>
+			<prefix>cs_username="</prefix>
+			<suffix>"</suffix>
+		</input>
+		<input type="text" token="c_ip">
+			<label>Client IP</label>
+			<seed>*</seed>
+			<prefix>c_ip="</prefix>
+			<suffix>"</suffix>
+		</input>
+	        <input type="dropdown" token="usage">
+			<choice value="*">Any</choice>
+			<choice value="Business">Business Usage</choice>
+			<choice value="Personal">Productivity Loss</choice>
+			<choice value="Violation">Legal Liability</choice>
+			<label>Usage</label>
+			<prefix>usage="</prefix>
+			<suffix>"</suffix>
+		</input>
+	      	<input type="time" />
+	</fieldset>
+	<row>
+		<table>
+			<title>Web Activity Summary</title>
+			<searchPostProcess>transaction s_hostname maxpause=5s | eval sc_bytes=sc_bytes/1024/1024 | eval action = substr(x_acltag,0,5) | eval isBlocked = if(action == "BLOCK", 1, 0)  | eval isAllowed = if(action == "ALLOW", 1, 0)  |  rename x_webcat_code_full as "URL Category" | stats sum(sc_bytes) as "Bandwidth in MB" values("URL Category") values(s_hostname) as "Sites Visited" sum(isAllowed) as Completed sum(isBlocked) as Blocked by _time | eval "Total Transactions"=Completed+Blocked | rename Blocked as "Blocked by URL Category" | addcoltotals | rename Completed as "Transactions Completed"</searchPostProcess>
+			<option name="showPager">true</option>
+			<option name="count">50</option>
+	      	</table>
+	</row>
+</form>

@@ -1,0 +1,72 @@
+<form>
+  <label>Firewall Form Search</label>
+  <!-- define master search template; leave time unbounded so that the time input can be used -->
+  <fieldset>
+    <input type="text" token="host">
+      <label>Host</label>
+    </input>
+    <input type="text" token="action">
+      <label>Action</label>
+    </input>
+    <input type="text" token="src_ip">
+      <label>Source IP</label>
+    </input> 
+    <input type="text" token="dest_ip">
+      <label>Destination IP</label>
+    </input>
+    <input type="text" token="src_port">
+      <label>Source Port</label>
+      <prefix>src_port</prefix>
+    </input>
+    <input type="text" token="dest_port">
+      <label>Dest Port</label>
+    </input>
+    <!-- add default TimePicker -->
+    <input type="time" />
+  </fieldset>
+  <row>
+    <chart>
+      <title>Events over Time</title>
+      <searchTemplate>eventtype=cisco_firewall $host$ $action$ $src_ip$ $dest_ip$ $src_port$ $dest_port$ | timechart count </searchTemplate>
+      <option name="charting.chart">line</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+  </row>
+  <row>
+    <chart>
+      <title>Events by Host</title>
+      <searchTemplate>eventtype=cisco_firewall $host$ $action$ $src_ip$ $dest_ip$ $src_port$ $dest_port$| stats count by host</searchTemplate>
+      <option name="charting.chart">bar</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+    <chart>
+      <title>Events by Action</title>
+      <searchTemplate>eventtype=cisco_firewall $host$ $action$ $src_ip$ $dest_ip$ $src_port$ $dest_port$| stats count by eventtype</searchTemplate>
+      <option name="charting.chart">bar</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+  </row>
+  <row>
+    <chart>
+      <title>Denies by Source</title>
+      <searchTemplate>eventtype=cisco_firewall eventtype=firewall-deny $host$ $action$ $src_ip$ $dest_ip$ $src_port$ $dest_port$| stats count by src_ip</searchTemplate>
+      <option name="charting.chart">pie</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+    <chart>
+      <title>Denies by Destination</title>
+      <searchTemplate>eventtype=cisco_firewall eventtype=firewall-deny $host$ $action$ $src_ip$ $dest_ip$ $src_port$ $dest_port$| stats count by dest_ip | head 20</searchTemplate>
+      <option name="charting.chart">pie</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+  </row>
+  <row>
+    <!-- show results as a table -->
+    <table>
+      <title>Recent Firewall Events Matching Your Search Criteria</title>
+      <searchTemplate>eventtype=cisco_firewall $host$ $action$ $src_ip$ $dest_ip$ $src_port$ $dest_port$ | fields _time,host,src_ip,dest_ip,protocol,log_level_desc,event_desc</searchTemplate>
+      <option name="showPager">true</option>
+      <option name="count">50</option>
+    </table>  
+  </row>
+</form>

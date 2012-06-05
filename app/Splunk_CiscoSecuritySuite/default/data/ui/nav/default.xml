@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nav>
+	<collection label="Splunk for Cisco Security">
+		<view name="cisco_security_overview" default="true" />
+		<view name="gc_overview" />
+		<view name="botnet_overview" />
+		<divider />
+		<collection label="Searches &amp; Reports">
+			<saved source="unclassified" view="flashtimeline" />
+		</collection>
+		<collection label="My Dashboards">
+			<view source="unclassified" />
+		</collection>
+		<divider />
+		<view name="getting_started" />
+		<a href="/manager">Configuration...</a>
+		<divider />
+		<a href="mailto:support@splunk.com">Send Feedback...</a>
+	</collection>
+
+	<collection label="Email Security">
+		<view name="esa_overview" />
+		<divider />
+		<view name="esa_form_search" />
+		<divider />
+		<collection label="Email Searches &amp; Reports">
+			<saved source="all" match="IronPort E-mail" view="flashtimeline" />
+		</collection>
+	</collection>
+
+	<collection label="Web Security">
+		<view name="wsa_overview" />
+		<collection label="Acceptable Use">
+			<collection label="Compliance">
+				<a href="wsa_acceptable_use_business">Business Usage</a>
+				<a href="wsa_acceptable_use_personal">Productivity Loss</a>
+				<a href="wsa_acceptable_use_legal">Legal Liability</a>
+				<a href="wsa_acceptable_use_tools">Internet Tools</a>
+			</collection>
+			<collection label="Client Reports">
+				<a href="wsa_client_overview">Client Overview Report</a>
+				<a href="wsa_client_profiler">Client Activity Profiler</a>
+			</collection>
+		</collection>
+		<collection label="Security">
+			<a href="wsa_security">Web Security Overview</a>
+		</collection>
+		<collection label="Network Resources">
+			<a href="wsa_network_resources">Network Resource Overview</a>
+		</collection>
+		<divider />
+		<collection label="Acceptable Use Reports">
+			<saved source="all" match="Cisco WSA - Acceptable Use" view="flashtimeline" />
+		</collection>
+		<collection label="Security Reports">
+			<saved source="all" match="Cisco WSA - Security" view="flashtimeline" />
+		</collection>
+		<collection label="Network Reports">
+			<saved source="all" match="Cisco WSA - Network" view="flashtimeline" />
+		</collection>
+	</collection>
+
+	<collection label="Network Security">
+		<!-- Firewall -->
+		<view name="firewall_overview" />
+		<divider />
+		<!-- IPS -->
+		<view name="ips_overview" />
+		<divider />
+		<view name="firewall_form" />
+		<divider />
+		<collection label="Firewall Searches &amp; Reports">
+			<saved source="all" match="Cisco Firewall" view="flashtimeline" />
+		</collection>
+		<collection label="IPS Searches &amp; Reports">
+			<saved source="all" match="Cisco IPS" view="flashtimeline" />
+		</collection>
+	</collection>
+
+	<collection label="Search">
+		<a href="flashtimeline">Timeline</a>
+		<view name="search_ip_profile" />
+	</collection>
+</nav>

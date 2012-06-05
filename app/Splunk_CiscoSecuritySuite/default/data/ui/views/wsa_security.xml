@@ -1,0 +1,138 @@
+<view template="dashboard.html">
+<label>Web Security Overview</label>
+<module name="AccountBar" layoutPanel="appHeader"/>
+<module name="AppBar" layoutPanel="navigationHeader"/>
+<module name="Message" layoutPanel="messaging">
+  <param name="filter">*</param>
+  <param name="level">error</param>
+  <param name="clearOnJobDispatch">True</param>
+  <param name="maxSize">1</param>
+</module>
+<module name="TitleBar" layoutPanel="viewHeader">
+  <param name="actionsMenuFilter">dashboard</param>
+</module>
+
+<module name="TimeRangePicker" layoutPanel="panel_row1_col1" group="Select time range">
+  <param name="default">Last 24 hours</param>
+  <param name="searchWhenChanged">True</param>
+  <module name="JobProgressIndicator" />
+
+  <module name="HiddenSavedSearch" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="savedSearch">Cisco WSA - Security - DataCube</param>
+    <param name="useHistory">Auto</param>
+    
+    <!-- Top 10 Poor/Suspicious Categories -->
+    <module name="HiddenPostProcess" layoutPanel="panel_row2_col1">
+      <!-- <param name="search">search x_wbrs_score&lt;-6 | stats sum(count) as count by x_webcat_code_full</param> -->
+      <param name="search">search x_wbrs_score&lt;-6 | top limit=10 x_webcat_code_full</param>
+      <module name="HiddenChartFormatter">
+	<param name="chartTitle">Top 10 Poor/Suspicious Categories</param>
+	<param name="chart">pie</param>
+	<param name="legend.placement">bottom</param>
+	<module name="JSChart">
+	  <param name="width">100%</param>
+	  <param name="height">250px</param>
+	  <module name="ConvertToDrilldownSearch">
+	    <module name="ViewRedirector">
+	      <param name="viewTarget">flashtimeline</param>
+	    </module>
+	  </module>
+	</module>
+      </module>
+    </module> <!-- HiddenPostProcess -->
+  
+    <!-- Top 10 Poor/Suspicious Domains -->
+    <module name="HiddenPostProcess" layoutPanel="panel_row2_col2">
+      <!-- Only showing the top 10 entries per SOLN-715 -->
+      <!-- <param name="search">search x_wbrs_score&lt;-6 | stats sum(count) as count by s_hostname | sort -count | head 10</param> -->
+      <param name="search">search x_wbrs_score&lt;-6 | top limit=10 s_hostname</param>
+      <module name="HiddenChartFormatter">
+	<param name="chartTitle">Top 10 Poor/Suspicious Domains</param>
+	<param name="chart">bar</param>
+	<param name="legend.placement">bottom</param>
+	<module name="JSChart">
+	  <param name="width">100%</param>
+	  <param name="height">250px</param>
+	  <module name="ConvertToDrilldownSearch">
+	    <module name="ViewRedirector">
+	      <param name="viewTarget">flashtimeline</param>
+	    </module>
+	  </module>
+	</module>
+      </module>
+    </module> <!-- HiddenPostProcess -->
+  
+    <!-- Top 10 c_ip -->
+    <module name="HiddenPostProcess" layoutPanel="panel_row2_col3">
+      <!-- <param name="search">search x_wbrs_score&lt;6 | stats sum(count) as count by c_ip</param> -->
+      <param name="search">search x_wbrs_score&lt;6 | top limit=10 c_ip</param>
+      <module name="SimpleResultsTable">
+	<param name="drilldown">row</param>
+	<param name="entityName">results</param>
+	<param name="displayRowNumbers">False</param>
+	<module name="ConvertToDrilldownSearch">
+	  <module name="ViewRedirector">
+	    <param name="viewTarget">flashtimeline</param>
+	  </module>
+	</module>
+      </module>
+    </module> <!-- HiddenPostProcess -->
+  
+    <!-- Traffic by Severity -->
+    <module name="HiddenPostProcess" layoutPanel="panel_row3_col1">
+      <param name="search">stats sum(count) as count by severity </param>
+      <module name="HiddenChartFormatter">
+	<param name="chartTitle">Traffic by Severity</param>
+	<param name="chart">pie</param>
+	<param name="legend.placement">bottom</param>
+	<module name="JSChart">
+	  <param name="width">100%</param>
+	  <param name="height">250px</param>
+	  <module name="ConvertToDrilldownSearch">
+	    <module name="ViewRedirector">
+	      <param name="viewTarget">flashtimeline</param>
+	    </module>
+	  </module>
+	</module>
+      </module>
+    </module> <!-- HiddenPostProcess -->
+  
+    <!-- Top 10 Web Threats Detected -->
+    <module name="HiddenPostProcess" layoutPanel="panel_row3_col2">
+      <!-- <param name="search">search x_webroot_threat_name!="-" | stats sum(count) as count by x_webroot_threat_name </param> -->
+      <param name="search">search x_webroot_threat_name!="-" | top limit=10 x_webroot_threat_name</param>
+      <module name="HiddenChartFormatter">
+	<param name="chartTitle">Top 10 Web Threats Detected</param>
+	<param name="chart">pie</param>
+	<param name="legend.placement">bottom</param>
+	<module name="JSChart">
+	  <param name="width">100%</param>
+	  <param name="height">250px</param>
+	  <module name="ConvertToDrilldownSearch">
+	    <module name="ViewRedirector">
+	      <param name="viewTarget">flashtimeline</param>
+	    </module>
+	  </module>
+	</module>
+      </module>
+    </module> <!-- HiddenPostProcess -->
+  
+    <!-- Top 10 c_ip -->
+    <module name="HiddenPostProcess" layoutPanel="panel_row3_col3">
+      <!-- <param name="search">search (x_webroot_threat_name!="-" OR x_mcafee_virus_name!="-" ) | stats sum(count) as count by c_ip </param> -->
+      <param name="search">search (x_webroot_threat_name!="-" OR x_mcafee_virus_name!="-" ) | top limit=10 c_ip</param>
+      <module name="SimpleResultsTable" >
+	<param name="drilldown">row</param>
+	<param name="entityName">results</param>
+	<param name="displayRowNumbers">False</param>
+	<module name="ConvertToDrilldownSearch">
+	  <module name="ViewRedirector">
+	    <param name="viewTarget">flashtimeline</param>
+	  </module>
+	</module>
+      </module>
+    </module> <!-- HiddenPostProcess -->
+  
+  </module> <!-- HiddenSavedSearch -->
+</module> <!-- TimeRangePicker -->
+</view>

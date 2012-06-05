@@ -1,0 +1,114 @@
+<view template="dashboard.html">
+<label>Network Resources Overview</label>
+<module name="AccountBar" layoutPanel="appHeader"/>
+<module name="AppBar" layoutPanel="navigationHeader"/>
+<module name="Message" layoutPanel="messaging">
+  <param name="filter">*</param>
+  <param name="level">error</param>
+  <param name="clearOnJobDispatch">True</param>
+  <param name="maxSize">1</param>
+</module>
+<module name="TitleBar" layoutPanel="viewHeader">
+  <param name="actionsMenuFilter">dashboard</param>
+</module>
+
+<module name="TimeRangePicker" layoutPanel="panel_row1_col1" group="Select time range">
+  <param name="default">Last 24 hours</param>
+  <param name="searchWhenChanged">True</param>
+  <module name="JobProgressIndicator" />
+
+  <module name="HiddenSavedSearch" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="savedSearch">Cisco WSA - Network Resources - DataCube</param>
+    <param name="useHistory">Auto</param>
+  
+    <!-- Overall Website Traffic -->
+    <module name="HiddenPostProcess" layoutPanel="panel_row1_col1">
+      <!-- <param name="search">stats sum(sc_bytes) by _time </param> -->
+      <param name="search">timechart sum(sc_bytes) AS Traffic | eval Traffic=`formatbytestom(Traffic)`</param>
+      <module name="HiddenChartFormatter">
+	<param name="chartTitle">Overall Website Traffic</param>
+	<param name="chart">line</param>
+	<param name="chart.nullValueMode">connect</param>
+	<param name="primaryAxisTitle.text">Time</param>
+	<param name="secondaryAxisTitle.text">Bandwidth in MB</param>
+	<param name="legend.placement">bottom</param>
+	<module name="JSChart">
+	  <param name="width">100%</param>
+	  <param name="height">250px</param>
+	  <module name="ConvertToDrilldownSearch">
+	    <module name="ViewRedirector">
+	      <param name="viewTarget">flashtimeline</param>
+	    </module>
+	  </module>
+	</module>
+      </module>
+    </module> <!-- HiddenPostProcess -->
+  
+    <!-- Top 10 Websites -->
+    <module name="HiddenPostProcess" layoutPanel="panel_row2_col1">
+      <!-- Only showing the top 10 entries per SOLN-715 -->
+      <param name="search">stats sum(sc_bytes) AS Traffic by s_hostname | eval Traffic=`formatbytestom(Traffic)` | sort -Traffic | head 10</param>
+      <module name="HiddenChartFormatter">
+	<param name="chartTitle">Top 10 Websites</param>
+	<param name="chart">bar</param>
+	<param name="primaryAxisTitle.text">Websites</param>
+	<param name="secondaryAxisTitle.text">Bandwidth in MB</param>
+	<param name="legend.placement">bottom</param>
+	<module name="JSChart">
+	  <param name="width">100%</param>
+	  <param name="height">250px</param>
+	  <module name="ConvertToDrilldownSearch">
+	    <module name="ViewRedirector">
+	      <param name="viewTarget">flashtimeline</param>
+	    </module>
+	  </module>
+	</module>
+      </module>
+    </module> <!-- HiddenPostProcess -->
+  
+    <!-- Traffic by Usage -->
+    <module name="HiddenPostProcess" layoutPanel="panel_row2_col2">
+      <param name="search">stats sum(sc_bytes) AS Traffic by usage | eval Traffic=`formatbytestom(Traffic)`</param>
+      <module name="HiddenChartFormatter">
+	<param name="chartTitle">Traffic by Usage</param>
+	<param name="chart">bar</param>
+	<param name="primaryAxisTitle.text">Usage</param>
+	<param name="secondaryAxisTitle.text">Bandwidth in MB</param>
+	<param name="legend.placement">bottom</param>
+	<module name="JSChart">
+	  <param name="width">100%</param>
+	  <param name="height">250px</param>
+	  <module name="ConvertToDrilldownSearch">
+	    <module name="ViewRedirector">
+	      <param name="viewTarget">flashtimeline</param>
+	    </module>
+	  </module>
+	</module>
+      </module>
+    </module> <!-- HiddenPostProcess -->
+  
+    <!-- Top 10 Categories -->
+    <module name="HiddenPostProcess" layoutPanel="panel_row2_col3">
+      <!-- Only showing the top 10 entries per SOLN-715 -->
+      <param name="search">stats sum(sc_bytes) AS Traffic by x_webcat_code_full | eval Traffic=`formatbytestom(Traffic)` | sort -Traffic | head 10</param>
+      <module name="HiddenChartFormatter">
+	<param name="chartTitle">Top 10 Categories</param>
+	<param name="primaryAxisTitle.text">Categories</param>
+	<param name="secondaryAxisTitle.text">Bandwidth in MB</param>
+	<param name="chart">bar</param>
+	<param name="legend.placement">bottom</param>
+	<module name="JSChart">
+	  <param name="width">100%</param>
+	  <param name="height">250px</param>
+	  <module name="ConvertToDrilldownSearch">
+	    <module name="ViewRedirector">
+	      <param name="viewTarget">flashtimeline</param>
+	    </module>
+	  </module>
+	</module>
+      </module>
+    </module> <!-- HiddenPostProcess -->
+  
+  </module> <!-- HiddenSavedSearch -->
+</module> <!-- TimeRangePicker -->
+</view>

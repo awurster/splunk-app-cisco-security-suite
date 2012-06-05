@@ -1,0 +1,65 @@
+<form>
+	<label>Client Overview Report</label>
+	<searchTemplate> eventtype="ironport_proxy" $cs_username$ $c_ip$ $usage$ | rex field=cs_url "\/\/(?P&lt;s_hostname&gt;[^/]*)" | transaction s_hostname maxpause=5s | stats count by usage s_hostname,cs_username,x_acltag,sc_bytes, c_ip, x_webcat_code_full, _time</searchTemplate>
+  	<fieldset>
+		<input type="text" token="cs_username">
+			<label>Username</label>
+			<seed>*</seed>
+			<prefix>cs_username="</prefix>
+			<suffix>"</suffix>
+		</input>
+		<input type="text" token="c_ip">
+			<label>Client IP</label>
+			<seed>*</seed>
+			<prefix>c_ip="</prefix>
+			<suffix>"</suffix>
+		</input>
+		<input type="dropdown" token="usage">
+			<choice value="*">Any</choice>
+			<choice value="Business">Business Usage</choice>
+			<choice value="Personal">Productivity Loss</choice>
+			<choice value="Violation">Legal Liability</choice>
+			<label>Usage</label>
+			<prefix>usage="</prefix>
+			<suffix>"</suffix>
+		</input>
+		<input type="time" />
+	</fieldset>
+	<row>
+		<chart>
+			<title>Requests over Time</title>
+			<!-- <searchPostProcess>stats sum(count) as count by _time</searchPostProcess> -->
+			<searchPostProcess>timechart sum(count) as count</searchPostProcess>
+			<option name="charting.chart">line</option>
+			<option name="charting.legend.placement">bottom</option>
+			<option name="charting.chart.nullValueMode">connect</option>
+			<option name="primaryAxisTitle.text">Time</option>
+			<option name="secondaryAxisTitle.text">Requests</option>
+		</chart>
+	</row>
+	<row>
+		<table>
+			<title>Top 10 Websites</title>
+			<!-- <searchPostProcess>stats sum(count) as count by s_hostname</searchPostProcess> -->
+			<searchPostProcess>top limit=10 s_hostname</searchPostProcess>
+			<option name="showPager">False</option>
+		</table>
+	    	<chart>
+			<title>Top 10 Categories</title>
+			<!-- <searchPostProcess>stats sum(count) as count by x_webcat_code_full</searchPostProcess> -->
+			<searchPostProcess>top limit=10 x_webcat_code_full</searchPostProcess>
+			<option name="charting.chart">pie</option>
+			<option name="charting.legend.placement">bottom</option>
+			<option name="height">300px</option>
+		</chart>
+	</row>
+	<row>
+		<table>
+			<title>Web Activities Summary</title>
+			<searchPostProcess>stats values(s_hostname) AS Website by x_webcat_code_full | rename x_webcat_code_full AS Category</searchPostProcess>
+			<option name="showPager">true</option>
+			<!-- <option name="count">500</option> -->
+			<option name="count">20</option>
+		</table>
+	</row>
+</form>

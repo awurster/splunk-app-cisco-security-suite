@@ -1,0 +1,87 @@
+<view template="dashboard.html">
+<label>E-mail Security Overview</label>
+<module name="AccountBar" layoutPanel="appHeader"/>
+<module name="AppBar" layoutPanel="navigationHeader"/>
+<module name="Message" layoutPanel="messaging">
+  <param name="filter">*</param>
+  <param name="level">error</param>
+  <param name="clearOnJobDispatch">True</param>
+  <param name="maxSize">1</param>
+</module>
+<module name="TitleBar" layoutPanel="viewHeader">
+  <param name="actionsMenuFilter">dashboard</param>
+</module>
+
+<module name="TimeRangePicker" layoutPanel="panel_row1_col1" group="Select time range">
+  <param name="default">Last 24 hours</param>
+  <param name="searchWhenChanged">True</param>
+  <module name="JobProgressIndicator" />
+
+  <module name="HiddenSavedSearch" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="savedSearch">Cisco IronPort E-mail - DataCube</param>
+    <param name="useHistory">Auto</param>
+    
+    <!-- E-mail Transactions Over Time  -->
+    <module name="HiddenPostProcess" layoutPanel="panel_row2_col1">
+      <!-- <param name="search">stats sum(count) as count by _time</param> -->
+      <param name="search">timechart sum(count) AS count</param>
+      <module name="HiddenChartFormatter">
+	<param name="chartTitle">E-mail Transactions Over Time</param>
+	<param name="chart">line</param>
+	<param name="chart.nullValueMode">connect</param>
+	<param name="legend.placement">bottom</param>
+	<module name="JSChart">
+	  <param name="width">100%</param>
+	  <param name="height">250px</param>
+	  <module name="ConvertToDrilldownSearch">
+	    <module name="ViewRedirector">
+	      <param name="viewTarget">flashtimeline</param>
+	    </module>
+	  </module>
+	</module>
+      </module>
+    </module> <!-- HiddenPostProcess -->
+  
+    <!-- Top 10 Recievers -->
+    <module name="HiddenPostProcess" layoutPanel="panel_row3_col1">
+      <!-- <param name="search">chart sum(count) as count by mailfrom | sort -count | head 10</param> -->
+      <param name="search">top limit=10 mailfrom</param>
+      <module name="HiddenChartFormatter">
+	<param name="chartTitle">Top 10 Recievers</param>
+	<param name="chart">pie</param>
+	<param name="legend.placement">bottom</param>
+	<module name="JSChart">
+	  <param name="width">100%</param>
+	  <param name="height">250px</param>
+	  <module name="ConvertToDrilldownSearch">
+	    <module name="ViewRedirector">
+	      <param name="viewTarget">flashtimeline</param>
+	    </module>
+	  </module>
+	</module>
+      </module>
+    </module> <!-- HiddenPostProcess -->
+    
+    <!-- Top 10 Senders -->
+    <module name="HiddenPostProcess" layoutPanel="panel_row3_col2">
+      <!-- <param name="search">chart sum(count) as count by mailto | sort -count | head 10</param> -->
+      <param name="search">top limit=10 mailto</param>
+      <module name="HiddenChartFormatter">
+	<param name="chartTitle">Top 10 Senders</param>
+	<param name="chart">pie</param>
+	<param name="legend.placement">bottom</param>
+	<module name="JSChart">
+	  <param name="width">100%</param>
+	  <param name="height">250px</param>
+	  <module name="ConvertToDrilldownSearch">
+	    <module name="ViewRedirector">
+	      <param name="viewTarget">flashtimeline</param>
+	    </module>
+	  </module>
+	</module>
+      </module>
+    </module> <!-- HiddenPostProcess -->
+  
+  </module> <!-- HiddenSavedSearch -->
+</module> <!-- TimeRangePicker -->
+</view>

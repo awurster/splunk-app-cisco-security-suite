@@ -1,0 +1,166 @@
+<view template="dashboard.html">
+<label>Acceptable Use Policy - Legal Liability</label>
+<module name="AccountBar" layoutPanel="appHeader" />
+<module name="AppBar" layoutPanel="navigationHeader" />
+<module name="Message" layoutPanel="messaging">
+  <param name="filter">*</param>
+  <param name="level">error</param>
+  <param name="clearOnJobDispatch">True</param>
+  <param name="maxSize">1</param>
+</module>
+<module name="TitleBar" layoutPanel="viewHeader">
+  <param name="actionsMenuFilter">dashboard</param>
+</module>
+
+<module name="TimeRangePicker" layoutPanel="panel_row1_col1" group="Select time range">
+  <param name="default">Last 24 hours</param>
+  <param name="searchWhenChanged">True</param>
+  <module name="JobProgressIndicator" />
+
+  <module name="HiddenSavedSearch" layoutPanel="panel_row2_col1" autoRun="True">
+    <param name="savedSearch">Cisco WSA - Acceptable Use - DataCube</param>
+    <param name="useHistory">Auto</param>
+  
+    <!-- Violation Use vs. Other -->
+    <module name="HiddenPostProcess" layoutPanel="panel_row2_col1">
+      <param name="search">eval usage = if(usage == "Violation", "Violation Use", "Other") | timechart sum(count) as count by usage</param>
+      <module name="HiddenChartFormatter">
+        <param name="chart">column</param>
+        <param name="chartTitle">Violation Use vs. Other</param>
+        <param name="chart.stackMode">stacked</param>
+        <param name="primaryAxisTitle.text">time</param>
+        <param name="secondaryAxisTitle.text">Requests</param>
+        <param name="legend.placement">bottom</param>
+        <module name="JSChart">
+          <param name="width">100%</param>
+          <param name="height">250px</param>
+          <module name="ConvertToDrilldownSearch">
+            <module name="ViewRedirector">
+              <param name="viewTarget">flashtimeline</param>
+            </module>
+          </module>
+        </module>
+      </module>
+    </module> <!-- HiddenPostProcess -->
+    
+    <!-- Top 10 Requested Websites -->
+    <module name="HiddenPostProcess" layoutPanel="panel_row3_col1">
+      <!-- Only showing the top 10 entries per SOLN-715 -->
+      <!-- <param name="search">search usage=Violation | stats sum(count) as count by s_hostname | sort -count | head 10</param> -->
+      <param name="search">search usage=Violation | top limit=10 s_hostname</param>
+      <module name="HiddenChartFormatter">
+        <param name="chart">bar</param>
+        <param name="chartTitle">Top 10 Requested Websites</param>
+        <param name="primaryAxisTitle.text">Website</param>
+        <param name="secondaryAxisTitle.text">Requests</param>
+        <param name="legend.placement">none</param>
+        <module name="JSChart">
+          <param name="width">100%</param>
+          <param name="height">250px</param>
+          
+          <module name="ConvertToDrilldownSearch" layoutPanel="panel_row4_col1">
+            <module name="HiddenPostProcess">
+              <param name="search">search usage=Violation | stats values(s_hostname) values(c_ip) values(cs_username) sum(count) as count by x_webcat_code_full</param>
+              <module name="JobProgressIndicator"></module>
+              <module name="SimpleResultsHeader">
+                <param name="headerFormat">$count$ events found for web site</param>
+                <param name="entityName">events</param>
+              </module>
+              <module name="SimpleResultsTable">
+                <param name="drilldown">row</param>
+                <param name="entityName">results</param>
+                <param name="displayRowNumbers">False</param>
+                <module name="ConvertToDrilldownSearch">
+                  <module name="ViewRedirector">
+                    <param name="viewTarget">flashtimeline</param>
+                  </module>
+                </module>
+              </module>
+            </module> <!-- HiddenPostProcess -->
+          </module> <!-- ConvertToDrilldownSearch -->
+        </module> <!-- JSChart -->
+      </module> <!-- HiddenChartFormatter -->
+    </module> <!-- HiddenPostProcess -->
+  
+    <!-- Top 10 Categories -->
+    <module name="HiddenPostProcess" layoutPanel="panel_row3_col2">
+      <!-- <param name="search">search usage=Violation |stats sum(count) as count by x_webcat_code_full</param> -->
+      <param name="search">search usage=Violation | top limit=10 x_webcat_code_full</param>
+      <module name="HiddenChartFormatter">
+        <param name="chartTitle">Top 10 Categories</param>
+        <param name="chart">pie</param>
+        <param name="legend.placement">bottom</param>
+        <module name="JSChart">
+          <param name="width">100%</param>
+          <param name="height">250px</param>
+          
+          <module name="ConvertToDrilldownSearch" layoutPanel="panel_row4_col1">
+            <module name="HiddenPostProcess">
+              <module name="JobProgressIndicator"></module>
+              <param name="search">search usage=Violation | stats values(s_hostname) values(cs_username) sum(count) as count by c_ip</param>
+              <module name="SimpleResultsHeader">
+                <param name="headerFormat">$count$ events found for category</param>
+                <param name="entityName">events</param>
+              </module>
+              <module name="SimpleResultsTable">
+                <param name="drilldown">row</param>
+                <param name="entityName">results</param>
+                <param name="displayRowNumbers">False</param>
+                <module name="ConvertToDrilldownSearch">
+                  <module name="ViewRedirector">
+                    <param name="viewTarget">flashtimeline</param>
+                  </module>
+                </module>
+              </module>
+            </module> <!-- HiddenPostProcess -->
+          </module> <!-- ConvertToDrilldownSearch -->
+        </module> <!-- JSChart -->
+      </module> <!-- HiddenChartFormatter -->
+    </module> <!-- HiddenPostProcess -->
+    
+    <!-- Top 10 Clients -->
+    <module name="HiddenPostProcess" layoutPanel="panel_row3_col3">
+      <!-- Only showing the top 10 entries per SOLN-715 -->
+      <!-- <param name="search">search usage=Violation | stats sum(count) as count by c_ip | sort -count | head 10</param> -->
+      <param name="search">search usage=Violation | top limit=10 c_ip</param>
+      <module name="HiddenChartFormatter">
+        <param name="chart">bar</param>
+        <param name="chartTitle">Top 10 Clients</param>
+        <param name="primaryAxisTitle.text">Client</param>
+        <param name="secondaryAxisTitle.text">Requests</param>
+        <param name="legend.placement">none</param>
+        <module name="JSChart">
+          <param name="width">100%</param>
+          <param name="height">250px</param>
+          
+          <module name="ConvertToDrilldownSearch" layoutPanel="panel_row4_col1">
+            <module name="HiddenPostProcess">
+              <module name="JobProgressIndicator"></module>
+              <param name="search">search usage=Violation | stats values(s_hostname) values(cs_username) sum(count) as count by x_webcat_code_full</param>
+              <module name="SimpleResultsHeader">
+                <param name="headerFormat">$count$ events found for client</param>
+                <param name="entityName">events</param>
+              </module>
+              <module name="SimpleResultsTable">
+                <param name="drilldown">row</param>
+                <param name="entityName">results</param>
+                <param name="displayRowNumbers">False</param>
+                <module name="ConvertToDrilldownSearch">
+                  <module name="ViewRedirector">
+                    <param name="viewTarget">flashtimeline</param>
+                  </module>
+                </module>
+              </module>
+            </module> <!-- HiddenPostProcess -->
+          </module> <!-- ConvertToDrilldownSearch -->
+        </module> <!-- JSChart -->
+      </module> <!-- HiddenChartFormatter -->
+    </module> <!-- HiddenPostProcess -->
+    
+    <module name="StaticContentSample" layoutPanel="panel_row4_col1">
+      <param name="text">Click elements in the above three panels to see more detail here</param>
+    </module>
+    
+  </module> <!-- HiddenSavedSearch -->
+</module> <!-- TimeRangePicker -->
+</view>
