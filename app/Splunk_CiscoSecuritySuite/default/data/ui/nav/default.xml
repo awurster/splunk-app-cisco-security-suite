@@ -2,6 +2,7 @@
 <nav>
 	<collection label="Splunk for Cisco Security">
 		<view name="cisco_security_overview" default="true" />
+		<view name="search_ip_profile" />
 		<view name="gc_overview" />
 		<view name="botnet_overview" />
 		<divider />
@@ -65,7 +66,8 @@
 		<view name="firewall_overview" />
 		<divider />
 		<!-- IPS -->
-		<view name="ips_overview" />
+		<view name="ips_dashboard" />
+		<view name="ips_analyst" />
 		<divider />
 		<view name="firewall_form" />
 		<divider />

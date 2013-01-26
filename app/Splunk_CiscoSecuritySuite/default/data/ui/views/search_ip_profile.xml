@@ -1,5 +1,5 @@
 <view template="dashboard.html" onunloadCancelJobs="False" autoCancelInterval="100">
-    <label>IP Profile</label>
+    <label>Profile an IP</label>
     <module name="AccountBar" layoutPanel="appHeader"/>
     <module name="AppBar" layoutPanel="navigationHeader"/>
     <module name="Message" layoutPanel="messaging">

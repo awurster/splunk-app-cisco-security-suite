@@ -1,2 +1,21 @@
-[]
-export = none
+[lookups]
+export = system
+
+[macros]
+export = system
+
+[eventtypes]
+export = system
+
+[tags]
+export = system
+
+
+[transforms]
+export = system
+
+[props]
+export = system
+
+[prop]
+export = system
