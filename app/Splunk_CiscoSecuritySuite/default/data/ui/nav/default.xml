@@ -79,6 +79,11 @@
 		</collection>
 	</collection>
 
+	<collection label="Identity Services">
+		<view name="ise_overview" />
+
+	</collection>
+
 	<collection label="Search">
 		<a href="flashtimeline">Timeline</a>
 		<view name="search_ip_profile" />
