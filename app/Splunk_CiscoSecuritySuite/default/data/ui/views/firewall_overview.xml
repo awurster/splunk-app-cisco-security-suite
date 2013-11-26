@@ -1,148 +1,95 @@
-<view template="dashboard.html">
-<label>Firewall Overview</label>
-<module name="AccountBar" layoutPanel="appHeader" />
-<module name="AppBar" layoutPanel="navigationHeader" />
-<module name="Message" layoutPanel="messaging">
-  <param name="filter">*</param>
-  <param name="level">error</param>
-  <param name="clearOnJobDispatch">True</param>
-  <param name="maxSize">1</param>
-</module>
-<module name="TitleBar" layoutPanel="viewHeader">
-  <param name="actionsMenuFilter">dashboard</param>
-</module>
-
-<module name="TimeRangePicker" layoutPanel="panel_row1_col1" group="Select time range">
-  <param name="default">Last 24 hours</param>
-  <param name="searchWhenChanged">True</param>
-  <module name="JobProgressIndicator" />
-
-  <module name="HiddenSavedSearch" layoutPanel="panel_row2_col1" autoRun="True">
-    <param name="savedSearch">Cisco Firewall - DataCube</param>
-    <param name="useHistory">Auto</param>
-  
-    <!-- Firewall Events Over Time -->  
-    <module name="HiddenPostProcess" layoutPanel="panel_row2_col1">
-      <param name="search">timechart sum(count) as count by eventtype</param>
-      <module name="HiddenChartFormatter">
-	<param name="chartTitle">Firewall Events Over Time</param>
-	<param name="chart">column</param>
-	<param name="chart.stackMode">stacked</param>
-	<param name="legend.placement">bottom</param>
-	<module name="JSChart">
-	  <param name="width">100%</param>
-	  <param name="height">250px</param>
-	  <module name="ConvertToDrilldownSearch">
-	    <module name="ViewRedirector">
-	      <param name="viewTarget">flashtimeline</param>
-	    </module>
-	  </module>
-	</module>
-      </module>
-    </module> <!-- HiddenPostProcess -->
-  
-    <!-- Top 10 Source IP -->
-    <module name="HiddenPostProcess" layoutPanel="panel_row3_col1">
-      <!-- <param name="search">stats sum(count) as count by src_ip</param> -->
-      <param name="search">top limit=10 src_ip</param>
-      <module name="RadioButtonSearch">
-	<param name="label">Event Type</param>
-	<param name="field">eventtype</param>
-	<param name="options">
-	  <list>
-	    <param name="text">All Firewall</param>
-	    <param name="value">cisco_firewall</param>
-	    <param name="selected">true</param>
-	  </list>
-	  <list>
-	    <param name="text">Firewall Accepts</param>
-	    <param name="value">firewall-accept</param>
-	  </list>
-	  <list>
-	    <param name="text">Firewall Denies</param>
-	    <param name="value">firewall-deny</param>
-	  </list>
-	</param> 
-	<module name="JobProgressIndicator"></module>
-	
-	<module name="HiddenChartFormatter">
-	  <param name="chartTitle">Top 10 Source IP</param>
-	  <param name="chart">pie</param>
-	  <param name="legend.placement">bottom</param>
-	  <module name="JSChart">
-	    <param name="width">100%</param>
-	    <param name="height">250px</param>
-	    <module name="ConvertToDrilldownSearch">
-	      <module name="ViewRedirector">
-		<param name="viewTarget">flashtimeline</param>
-	      </module>
-	    </module>
-	  </module>
-	</module>
-      </module> <!-- RadioButtonSearch -->
-    </module> <!-- HiddenPostProcess -->
-  
-    <!-- Top 10 Destination IP -->
-    <module name="HiddenPostProcess" layoutPanel="panel_row3_col2">
-      <!-- <param name="search">stats sum(count) as count by dest_ip</param> -->
-      <param name="search">top limit=10 dest_ip</param>
-      <module name="RadioButtonSearch">
-	<param name="label">Event Type</param>
-	<param name="field">eventtype</param>
-	<param name="options">
-	  <list>
-	    <param name="text">All Firewall</param>
-	    <param name="value">cisco_firewall</param>
-	    <param name="selected">true</param>
-	  </list>
-	  <list>
-	    <param name="text">Firewall Accepts</param>
-	    <param name="value">firewall-accept</param>
-	  </list>
-	  <list>
-	    <param name="text">Firewall Denies</param>
-	    <param name="value">firewall-deny</param>
-	  </list>
-	</param>
-	<module name="JobProgressIndicator"></module>
-	
-	<module name="HiddenChartFormatter">
-	  <param name="chartTitle">Top 10 Destination IP</param>
-	  <param name="chart">pie</param>
-	  <param name="legend.placement">bottom</param>
-	  <module name="JSChart">
-	    <param name="width">100%</param>
-	    <param name="height">250px</param>
-	    <module name="ConvertToDrilldownSearch">
-	      <module name="ViewRedirector">
-		<param name="viewTarget">flashtimeline</param>
-	      </module>
-	    </module>
-	  </module>
-	</module>
-      </module> <!-- RadioButtonSearch -->
-    </module> <!-- HiddenPostProcess -->
-  
-    <!-- SimpleResultsTable -->
-    <module name="HiddenPostProcess" layoutPanel="panel_row4_col1">
-      <param name="search">stats sum(count) as count by _time src_ip, dest_ip, log_level_desc,event_desc</param>
-      <module name="Paginator">
-	<param name="entityName">results</param>
-	<param name="count">20</param>
-	<module name="SimpleResultsTable">
-	  <param name="displayMenu">True</param>
-	  <param name="drilldown">row</param>
-	  <param name="entityName">results</param>
-	  <param name="displayRowNumbers">False</param>
-	  <module name="ConvertToDrilldownSearch">
-	    <module name="ViewRedirector">
-	      <param name="viewTarget">flashtimeline</param>
-	    </module>
-	  </module>
-	</module>
-      </module>
-    </module> <!-- HiddenPostProcess -->
-  
-  </module> <!-- HiddenSavedSearch -->
-</module> <!-- TimeRangePicker -->
-</view>
+<form>
+  <label>Firewall Overview</label>
+  <description/>
+  <fieldset autoRun="true" submitButton="false">
+    <input type="time" searchWhenChanged="true">
+      <default>
+        <earliestTime>-60m@m</earliestTime>
+        <latestTime>now</latestTime>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <chart>
+      <title>Firewall Events</title>
+      <searchString>eventtype=cisco_firewall* | timechart count by action usenull=f</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">column</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+  </row>
+  <row>
+    <chart>
+      <title>Top Source</title>
+      <searchString>eventtype=cisco_firewall* | top src_ip</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">pie</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+    <chart>
+      <title>Top Destination</title>
+      <searchString>eventtype=cisco_firewall* | top dest_ip</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">pie</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+  </row>
+  <row>
+    <table>
+      <title>Real-Time Firewall Events</title>
+      <searchString>sourcetype=cisco_asa | table _time, host, src_interface, src_ip, src_port, src_sgt, dest_interface, dest_ip, dest_port, action | sort -_time</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="list.drilldown">full</option>
+      <option name="list.wrap">1</option>
+      <option name="maxLines">5</option>
+      <option name="raw.drilldown">full</option>
+      <option name="rowNumbers">false</option>
+      <option name="table.drilldown">1</option>
+      <option name="table.sortDirection">asc</option>
+      <option name="table.wrap">1</option>
+      <option name="type">list</option>
+      <option name="wrap">true</option>
+      <option name="displayRowNumbers">false</option>
+      <option name="dataOverlayMode">none</option>
+      <option name="drilldown">row</option>
+      <option name="count">20</option>
+    </table>
+  </row>
+</form>

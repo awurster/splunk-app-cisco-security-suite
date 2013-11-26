@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <nav>
 	<collection label="Splunk for Cisco Security">
-		<view name="cisco_security_overview" default="true" />
-		<view name="search_ip_profile" />
+        <view name="cisco_security_overview" default="true"/>
 		<view name="gc_overview" />
 		<view name="botnet_overview" />
 		<divider />
 		<collection label="Searches &amp; Reports">
-			<saved source="unclassified" view="flashtimeline" />
+			<saved source="unclassified" view="search" />
 		</collection>
 		<collection label="My Dashboards">
 			<view source="unclassified" />
@@ -25,7 +24,7 @@
 		<view name="esa_form_search" />
 		<divider />
 		<collection label="Email Searches &amp; Reports">
-			<saved source="all" match="IronPort E-mail" view="flashtimeline" />
+			<saved source="all" match="Cisco ESA" view="search" />
 		</collection>
 	</collection>
 
@@ -51,41 +50,51 @@
 		</collection>
 		<divider />
 		<collection label="Acceptable Use Reports">
-			<saved source="all" match="Cisco WSA - Acceptable Use" view="flashtimeline" />
+			<saved source="all" match="Cisco WSA - Acceptable Use" view="search" />
 		</collection>
 		<collection label="Security Reports">
-			<saved source="all" match="Cisco WSA - Security" view="flashtimeline" />
+			<saved source="all" match="Cisco WSA - Security" view="search" />
 		</collection>
 		<collection label="Network Reports">
-			<saved source="all" match="Cisco WSA - Network" view="flashtimeline" />
+			<saved source="all" match="Cisco WSA - Network" view="search" />
 		</collection>
 	</collection>
 
 	<collection label="Network Security">
 		<!-- Firewall -->
 		<view name="firewall_overview" />
+		<view name="firewall_form" />
 		<divider />
 		<!-- IPS -->
 		<view name="ips_dashboard" />
 		<view name="ips_analyst" />
 		<divider />
-		<view name="firewall_form" />
-		<divider />
 		<collection label="Firewall Searches &amp; Reports">
-			<saved source="all" match="Cisco Firewall" view="flashtimeline" />
+			<saved source="all" match="Cisco Firewall" view="search" />
 		</collection>
 		<collection label="IPS Searches &amp; Reports">
-			<saved source="all" match="Cisco IPS" view="flashtimeline" />
+			<saved source="all" match="Cisco IPS" view="search" />
 		</collection>
 	</collection>
 
-	<collection label="Identity Services">
-		<view name="ise_overview" />
+    <collection label="Identity Services">
+        <view name="ise_overview" />
+        <divider />
+        <collection label="ISE Searches &amp; Reports">
+                <saved source="all" match="Cisco ISE" view="search" />
+        </collection>
+    </collection>
 
-	</collection>
-
+    <collection label="Cyber Threat Defense">
+        <view name="cyber_threat_defense_overview" />
+        <divider />
+        <collection label="Cyber Threat Defense Searches &amp; Reports">
+                <saved source="all" match="Cisco CTD" view="search" />
+        </collection>
+    </collection>
+        
 	<collection label="Search">
-		<a href="flashtimeline">Timeline</a>
+		<a href="search">Search</a>
 		<view name="search_ip_profile" />
 	</collection>
 </nav>

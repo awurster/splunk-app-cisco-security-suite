@@ -1,5 +1,5 @@
-<view template="dashboard.html" onunloadCancelJobs="False" autoCancelInterval="100">
-<label>E-Mail Security Form Search</label>
+<view template="dashboard.html" stylesheet="application.css" onunloadCancelJobs="False" autoCancelInterval="100">
+<label>Message Tracking</label>
 <module name="AccountBar" layoutPanel="appHeader" />
 <module name="AppBar" layoutPanel="navigationHeader" />
 <module name="Message" layoutPanel="messaging">

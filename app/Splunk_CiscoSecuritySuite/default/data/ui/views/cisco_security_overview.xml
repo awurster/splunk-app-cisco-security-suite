@@ -1,297 +1,140 @@
-<view template="dashboard.html" stylesheet="dashboard.css">
-<label>Summary</label>
-<module name="AccountBar" layoutPanel="appHeader" />
-<module name="AppBar" layoutPanel="navigationHeader" />
-<module name="Message" layoutPanel="messaging">
-  <param name="filter">*</param>
-  <param name="level">error</param>
-  <param name="clearOnJobDispatch">True</param>
-  <param name="maxSize">1</param>
-</module>
-<module name="TitleBar" layoutPanel="viewHeader">
-  <param name="actionsMenuFilter">dashboard</param>
-</module>
+<form stylesheet="application.css">
+  <label>Cisco Security Overview</label>
+  <description>your dashboard for all things Cisco... Security.</description>
+  <fieldset autoRun="true" submitButton="false">
+    <input type="time" searchWhenChanged="true">
+      <default>
+        <earliestTime>-60m@m</earliestTime>
+        <latestTime>now</latestTime>
+      </default>
+    </input>
+  </fieldset>
+  
+  <!--<searchTemplate>
+    sourcetype=cisco* | eval src=coalesce(src_ip,src_host) | eval dest=coalesce(dest_ip,dest_host) | stats count by host product eventtype src dest _time
+  </searchTemplate>-->
+  
+  <row>
+    <map>
+      <title>Global Security Events</title>
+      <!-- use 'src_ip!="10.0.0.0/8" src_ip!="172.12.0.0/12" src_ip!="192.168.0.0/16" src_ip!="0.0.0.0/32' to filter out local IP events -->
+      <!-- <searchString>sourcetype=cisco* src_ip!="10.0.0.0/8" src_ip!="172.12.0.0/12" src_ip!="192.168.0.0/16" src_ip!="0.0.0.0/32" | eval src=coalesce(src_ip,src_host) | eval dest=coalesce(dest_ip,dest_host) | iplocation src | geostats latfield=lat longfield=lon count by product</searchString>-->
+      <searchName>Global Security Events</searchName>
+      <!-- use custom colors -->
+      <option name="mapping.seriesColors">[0x9C4B4B,0xD76034,0xAFAE2E,0x4C674F,0x9E7395]</option>
+      <!-- adjust marker opacity and size range -->
+      <option name="mapping.markerLayer.markerOpacity">0.8</option>
+      <option name="mapping.markerLayer.markerMinSize">5</option>
+      <option name="mapping.markerLayer.markerMaxSize">50</option>
+      <!-- set initial map center and zoom level -->
+      <option name="mapping.map.center">(14.5833, 120.9667)</option>
+      <option name="mapping.map.zoom">2</option>
+    </map>
+    <chart>
+      <title>Security Events Statistcs</title>
+      <searchString>sourcetype=cisco* | timechart useother=true usenull=f limit=4 count by product | sort -count</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.seriesColors">[0x9C4B4B,0x387EA4,0xAFAE2E,0x4C674F,0xD76034,0x89B4CC,0x91CC9F,0x574630,0xEBBB91,0x9E7395]</option>      
+      <option name="charting.axisTitleX.visibility">collapsed</option>
+      <option name="charting.axisTitleY.visibility">collapsed</option>
+      <option name="charting.axisLabelsX.visibility">hide</option>
+      <option name="charting.axisLabelsY.visibility">show</option>
+      <option name="charting.axisLabelsX.majorLabelVisibility">show</option>
+      <option name="charting.axisLabelsY.majorLabelVisibility">show</option>       
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">log</option>
+      <option name="charting.chart">line</option>
+      <option name="charting.chart.nullValueMode">connect</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="height">400</option>
+      <option name="charting.height">400</option>
+      <option name="charting.layout.splitSeries">1</option>
+      <option name="charting.layout.splitSeriesMargin">(4,4,4,8)</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+  </row>
+  <row>
+    <chart>
+      <title>Top Sources</title>
+      <searchString>sourcetype=cisco* | eval src=coalesce(src_ip,src_host) | eval dest=coalesce(dest_ip,dest_host) | top limit=10 src</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">log</option>
+      <option name="charting.chart">pie</option>
+      <option name="charting.chart.nullValueMode">connect</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.chart.seriesColors">[0x9C4B4B,0x387EA4,0xAFAE2E,0x4C674F,0xD76034,0x89B4CC,0x91CC9F,0x574630,0xEBBB91,0x9E7395]</option>      
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+    <chart>
+      <title>Top Destinations</title>
+      <searchString>sourcetype=cisco* | eval src=coalesce(src_ip,src_host) | eval dest=coalesce(dest_ip,dest_host) | top limit=10 dest</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">pie</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.chart.seriesColors">[0x9C4B4B,0x387EA4,0xAFAE2E,0x4C674F,0xD76034,0x89B4CC,0x91CC9F,0x574630,0xEBBB91,0x9E7395]</option>      
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+  </row>
+  <row>
+    <table>
+      <title>Security Event Stats by Sourcetype</title>
+      <searchString>sourcetype=cisco* | chart count sparkline(count) as "trending" by sourcetype | sort -count</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <!-- Set span for each sparkline datapoint to be 1 hour -->
+      <option name="wrap">true</option>
+      <option name="rowNumbers">true</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">cell</option>
+      <option name="count">10</option>
+      <!-- Set sparkline options here; make sure that field matches field name of the search results -->
+      <format type="sparkline" field="trend">
+        <option name="type">bar</option>
+        <option name="height">40px</option>
+        <!-- Use colorMap to map specific values to selected colors -->
+        <option name="colorMap">
+          <option name="2000:">#5379AF</option>
+          <option name=":1999">#9ac23c</option>
+        </option>
+        <option name="barWidth">5px</option>
+      </format>
+    </table>
+    <table>
+      <title>Security Event Stats by Host</title>
+      <searchString>sourcetype=cisco* | stats count by host, product, eventtype | sort -count</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">row</option>
+      <option name="count">10</option>
+    </table>
+  </row>
+  
+</form>
 
-<module name="TimeRangePicker" layoutPanel="panel_row1_col1" group="Select time range">
-  <param name="default">Last 24 hours</param>
-  <param name="searchWhenChanged">True</param>  
-  <module name="JobProgressIndicator" />
-  
-  <module name="HiddenSearch" layoutPanel="panel_row1_col1" autoRun="True">
-    <param name="search">src_ip!="10.*" src_ip!="192.*" src_ip!="0.0.*" | geoip src_ip</param>
-    <!-- GoogleMap -->
-    <module name="GoogleMaps">
-      <param name="height">350px</param>
-      <param name="scrollwheel">off</param>
-      <param name="mapStyles">roadmap,terrain,satellite</param>
-      <param name="mapType">terrain</param>
-      <param name="drilldown">True</param>
-      <param name="drilldown_field">src_ip</param>
-      <param name="overlay">clusters</param>
-      <param name="overlay.opacity">0.75</param>
-      <param name="overlay.rangeMap">0, 100, 500, 1000, 10000</param>
-      <param name="overlay.roundQuantity">True</param>
-    </module>
-  </module>
-  
-  <module name="HiddenSearch" layoutPanel="panel_row1_col1" autoRun="True">
-    <param name="search">eventtype="cisco*" OR eventtype="ironport*" | stats count by src_ip dest_ip eventtype _time</param>
-    
-    <!-- Cisco Security Events -->
-    <module name="HiddenPostProcess" layoutPanel="panel_row2_col1" group="Cisco Security Events" autoRun="True">
-      <param name="search">timechart sum(count) as count by eventtype</param>
-      <module name="HiddenChartFormatter">
-	<param name="chart">column</param>
-	<param name="chart.stackMode">stacked</param>
-	<param name="primaryAxisTitle.text">Time</param>
-	<module name="JSChart">
-	  <param name="width">100%</param>
-	  <param name="height">300px</param>
-	  <module name="ConvertToDrilldownSearch">
-	    <module name="ViewRedirector">
-	    <param name="viewTarget">flashtimeline</param>
-	    </module>
-	  </module>
-	</module>
-      </module>
-    </module> <!-- HiddenPostProcess -->
-    
-    <!-- Cisco Security Events by Top 10 Destination IP -->
-    <module name="HiddenPostProcess" layoutPanel="panel_row3_col1" group="Cisco Security Events by Top 10 Destination IP " autoRun="True">
-      <!-- <param name="search"> stats sum(count) as count by dest_ip | head 15 </param> -->
-      <param name="search">top limit=10 dest_ip</param>
-      <module name="HiddenChartFormatter">
-	<param name="chart">pie</param>
-	<module name="JSChart">
-	  <param name="width">100%</param>
-	  <param name="height">300px</param>
-	  <module name="ConvertToDrilldownSearch">
-	    <module name="ViewRedirector">
-	      <param name="viewTarget">flashtimeline</param>
-	    </module>
-	  </module>
-	</module>
-      </module>
-    </module> <!-- HiddenPostProcess -->
-
-    <!-- Cisco Security Events by Top 10 Source IP -->
-    <module name="HiddenPostProcess" layoutPanel="panel_row3_col2" group="Cisco Security Events by Top 10 Source IP " autoRun="True">
-      <!-- <param name="search">stats sum(count) as count by src_ip | head 15</param> -->
-      <param name="search">top limit=10 src_ip</param>
-      <module name="HiddenChartFormatter">
-	<param name="chart">pie</param>
-	<module name="JSChart">
-	  <param name="width">100%</param>
-	  <param name="height">300px</param>
-	  <module name="ConvertToDrilldownSearch">
-	    <module name="ViewRedirector">
-	      <param name="viewTarget">flashtimeline</param>
-	    </module>
-	  </module>
-	</module>          
-      </module>
-    </module> <!-- HiddenPostProcess -->
-  </module> <!-- HiddenSearch -->
-  
-  <module name="StaticContentSample" layoutPanel="panel_row4_col1" group="All indexed data">
-    <param name="text">This lists all of the data you have loaded into your default indexes over all time.
-      Click <![CDATA[<a href="/manager/search/data/inputs/monitor"> here </a>]]> to add more data.
-    </param>
-  </module>
-    
-  <!-- The first list of sources -->
-  <module name="HiddenSearch" layoutPanel="panel_row4_col1_grp1" autoRun="true">
-    <param name="search">| metadata type=sources</param>
-    <module name="SimpleResultsHeader">
-      <param name="entityName">results</param>
-      <param name="headerFormat">Sources (%(count)s)</param>
-    </module>
-  </module>
-  
-  <module name="Sorter" layoutPanel="panel_row4_col1_grp1">
-    <param name="sortKey">totalCount</param>
-    <param name="sortDir">desc</param>
-    <param name="fields">
-      <list>
-	<param name="label">Source</param>
-	<param name="value">source</param>
-      </list>
-      <list>
-	<param name="label">Total Count</param>
-	<param name="value">totalCount</param>
-      </list>
-      <list>
-	<param name="label">Last Updated</param>
-	<param name="value">lastTime</param>
-      </list>
-    </param>
-  
-    <module name="Paginator" >
-      <param name="count">10</param>
-      <param name="entityName">settings</param>
-      <param name="maxPages">10</param>
-      
-      <module name="SearchLinkLister">
-	<param name="search">| metadata type=sources | tags</param>
-	<param name="searchFieldsToDisplay">
-	  <list>
-	    <param name="label">source</param>
-	    <param name="value">source</param>
-	  </list>
-	  <list>
-	    <param name="label">totalCount</param>
-	    <param name="labelFormat">number</param>
-	  </list>
-	  <list>
-	    <param name="label">tag::source</param>
-	    <param name="value">tag::source</param>
-	  </list>
-	</param>
-	
-	<module name="ConvertToIntention">
-	  <param name="intention">
-	    <param name="name">addterm</param>
-	    <param name="arg">
-	      <param name="$click.key$">$click.value$</param>
-	    </param>
-	  </param>
-	  
-	  <module name="ViewRedirector">
-	    <param name="viewTarget">flashtimeline</param>
-	  </module>
-	</module> <!-- ConvertToIntention -->
-      </module> <!-- SearchLinkLister -->
-    </module> <!-- Paginator -->
-  </module> <!-- Sorter -->
-  
-  <!-- The list of sourcetypes -->
-  <module name="HiddenSearch" layoutPanel="panel_row4_col1_grp2" autoRun="true">
-    <param name="search">| metadata type=sourcetypes</param>
-    <module name="SimpleResultsHeader">
-      <param name="entityName">results</param>
-      <param name="headerFormat">Sourcetypes (%(count)s)</param>
-    </module>
-  </module>
-  
-  <module name="Sorter" layoutPanel="panel_row4_col1_grp2">
-    <param name="sortKey">totalCount</param>
-    <param name="sortDir">desc</param>
-    <param name="fields">
-      <list>
-	<param name="label">Sourcetype</param>
-	<param name="value">sourcetype</param>
-      </list>
-      <list>
-	<param name="label">Total Count</param>
-	<param name="value">totalCount</param>
-      </list>
-      <list>
-	<param name="label">Last Updated</param>
-	<param name="value">lastTime</param>
-      </list>
-    </param>
-  
-    <module name="Paginator" >
-      <param name="count">10</param>
-      <param name="entityName">settings</param>
-      <param name="maxPages">10</param>
-      
-      <module name="SearchLinkLister">
-	<param name="search">| metadata type=sourcetypes | tags</param>
-	<param name="searchFieldsToDisplay">
-	  <list>
-	    <param name="label">sourcetype</param>
-	    <param name="value">sourcetype</param>
-	  </list>
-	  <list>
-	    <param name="label">totalCount</param>
-	    <param name="labelFormat">number</param>
-	  </list>
-	  <list>
-	    <param name="label">tag::sourcetype</param>
-	    <param name="value">tag::sourcetype</param>
-	  </list>
-	</param>
-	
-	<module name="ConvertToIntention">
-	  <param name="intention">
-	    <param name="name">addterm</param>
-	    <param name="arg">
-	      <param name="$click.key$">$click.value$</param>
-	    </param>
-	  </param>
-	  
-	  <module name="ViewRedirector">
-	    <param name="viewTarget">flashtimeline</param>
-	  </module>
-	</module> <!-- ConvertToIntention -->
-      </module> <!-- SearchLinkLister -->
-    </module> <!-- Paginator -->
-  </module> <!-- Sorter -->
-  
-  <!-- The list of hosts -->
-  <module name="HiddenSearch" layoutPanel="panel_row4_col1_grp3" autoRun="true">
-    <param name="search">| metadata type=hosts</param>
-    <module name="SimpleResultsHeader">
-      <param name="entityName">results</param>
-      <param name="headerFormat">Hosts (%(count)s)</param>
-    </module>
-  </module>
-  
-  <module name="Sorter" layoutPanel="panel_row4_col1_grp3">
-    <param name="sortKey">totalCount</param>
-    <param name="sortDir">desc</param>
-    <param name="fields">
-      <list>
-	<param name="label">Host</param>
-	<param name="value">host</param>
-      </list>
-      <list>
-	<param name="label">Total Count</param>
-	<param name="value">totalCount</param>
-      </list>
-      <list>
-	<param name="label">Last Updated</param>
-	<param name="value">lastTime</param>
-      </list>
-    </param>
-    
-    <module name="Paginator" >
-      <param name="count">10</param>
-      <param name="entityName">settings</param>
-      <param name="maxPages">10</param>
-      
-      <module name="SearchLinkLister">
-	<param name="search">| metadata type=hosts | tags</param>
-	<param name="searchFieldsToDisplay">
-	  <list>
-	    <param name="label">host</param>
-	    <param name="value">host</param>
-	  </list>
-	  <list>
-	    <param name="label">totalCount</param>
-	    <param name="labelFormat">number</param>
-	  </list>
-	  <list>
-	    <param name="label">tag::host</param>
-	    <param name="value">tag::host</param>
-	  </list>
-	</param>
-	
-	<module name="ConvertToIntention">
-	  <param name="intention">
-	    <param name="name">addterm</param>
-	    <param name="arg">
-	      <param name="$click.key$">$click.value$</param>
-	    </param>
-	  </param>
-	  
-	  <module name="ViewRedirector">
-	    <param name="viewTarget">flashtimeline</param>
-	  </module>
-	</module> <!-- ConvertToIntention -->
-      </module> <!-- SearchLinkLister -->
-    </module> <!-- Paginator -->
-  </module> <!-- Sorter-->
-</module> <!-- TimeRangePicker -->
-</view>

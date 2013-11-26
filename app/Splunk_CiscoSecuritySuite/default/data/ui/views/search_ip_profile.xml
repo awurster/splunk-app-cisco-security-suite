@@ -1,4 +1,4 @@
-<view template="dashboard.html" onunloadCancelJobs="False" autoCancelInterval="100">
+<view template="dashboard.html" stylesheet="application.css" onunloadCancelJobs="False" autoCancelInterval="100">
     <label>Profile an IP</label>
     <module name="AccountBar" layoutPanel="appHeader"/>
     <module name="AppBar" layoutPanel="navigationHeader"/>

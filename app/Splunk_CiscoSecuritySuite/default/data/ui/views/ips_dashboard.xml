@@ -1,5 +1,5 @@
-<view autoCancelInterval="90" isVisible="true" objectMode="SimpleDashboard" onunloadCancelJobs="true" refresh="-1" template="dashboard.html">
-  <label>Cisco IPS Dashboard</label>
+<view autoCancelInterval="90" isVisible="true" objectMode="SimpleDashboard" onunloadCancelJobs="true" refresh="-1" template="dashboard.html" stylesheet="application.css">
+  <label>IPS Dashboard</label>
 
   <!-- Standard Header -->
   <module name="AccountBar" layoutPanel="appHeader"/>
@@ -314,4 +314,4 @@
       </module>
     </module> <!-- End HiddenSearch -->
   </module> <!-- End TimeRangePicker -->
-</view>
+</view>

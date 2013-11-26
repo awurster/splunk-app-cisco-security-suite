@@ -1,4 +1,4 @@
-<view template="dashboard.html" stylesheet="dashboard2.css">
+<view template="dashboard.html" stylesheet="application.css">
 <label>IPS Overview</label>
 <module name="AccountBar" layoutPanel="appHeader"/>
 <module name="AppBar" layoutPanel="navigationHeader"/>

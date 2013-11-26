@@ -1,87 +1,239 @@
-<view template="dashboard.html">
-<label>E-mail Security Overview</label>
-<module name="AccountBar" layoutPanel="appHeader"/>
-<module name="AppBar" layoutPanel="navigationHeader"/>
-<module name="Message" layoutPanel="messaging">
-  <param name="filter">*</param>
-  <param name="level">error</param>
-  <param name="clearOnJobDispatch">True</param>
-  <param name="maxSize">1</param>
-</module>
-<module name="TitleBar" layoutPanel="viewHeader">
-  <param name="actionsMenuFilter">dashboard</param>
-</module>
-
-<module name="TimeRangePicker" layoutPanel="panel_row1_col1" group="Select time range">
-  <param name="default">Last 24 hours</param>
-  <param name="searchWhenChanged">True</param>
-  <module name="JobProgressIndicator" />
-
-  <module name="HiddenSavedSearch" layoutPanel="panel_row2_col1" autoRun="True">
-    <param name="savedSearch">Cisco IronPort E-mail - DataCube</param>
-    <param name="useHistory">Auto</param>
-    
-    <!-- E-mail Transactions Over Time  -->
-    <module name="HiddenPostProcess" layoutPanel="panel_row2_col1">
-      <!-- <param name="search">stats sum(count) as count by _time</param> -->
-      <param name="search">timechart sum(count) AS count</param>
-      <module name="HiddenChartFormatter">
-	<param name="chartTitle">E-mail Transactions Over Time</param>
-	<param name="chart">line</param>
-	<param name="chart.nullValueMode">connect</param>
-	<param name="legend.placement">bottom</param>
-	<module name="JSChart">
-	  <param name="width">100%</param>
-	  <param name="height">250px</param>
-	  <module name="ConvertToDrilldownSearch">
-	    <module name="ViewRedirector">
-	      <param name="viewTarget">flashtimeline</param>
-	    </module>
-	  </module>
-	</module>
-      </module>
-    </module> <!-- HiddenPostProcess -->
-  
-    <!-- Top 10 Recievers -->
-    <module name="HiddenPostProcess" layoutPanel="panel_row3_col1">
-      <!-- <param name="search">chart sum(count) as count by mailfrom | sort -count | head 10</param> -->
-      <param name="search">top limit=10 mailfrom</param>
-      <module name="HiddenChartFormatter">
-	<param name="chartTitle">Top 10 Recievers</param>
-	<param name="chart">pie</param>
-	<param name="legend.placement">bottom</param>
-	<module name="JSChart">
-	  <param name="width">100%</param>
-	  <param name="height">250px</param>
-	  <module name="ConvertToDrilldownSearch">
-	    <module name="ViewRedirector">
-	      <param name="viewTarget">flashtimeline</param>
-	    </module>
-	  </module>
-	</module>
-      </module>
-    </module> <!-- HiddenPostProcess -->
-    
-    <!-- Top 10 Senders -->
-    <module name="HiddenPostProcess" layoutPanel="panel_row3_col2">
-      <!-- <param name="search">chart sum(count) as count by mailto | sort -count | head 10</param> -->
-      <param name="search">top limit=10 mailto</param>
-      <module name="HiddenChartFormatter">
-	<param name="chartTitle">Top 10 Senders</param>
-	<param name="chart">pie</param>
-	<param name="legend.placement">bottom</param>
-	<module name="JSChart">
-	  <param name="width">100%</param>
-	  <param name="height">250px</param>
-	  <module name="ConvertToDrilldownSearch">
-	    <module name="ViewRedirector">
-	      <param name="viewTarget">flashtimeline</param>
-	    </module>
-	  </module>
-	</module>
-      </module>
-    </module> <!-- HiddenPostProcess -->
-  
-  </module> <!-- HiddenSavedSearch -->
-</module> <!-- TimeRangePicker -->
-</view>
+<form stylesheet="application.css" script="application.js">
+  <label>Email Security Overview</label>
+  <description>a look into your Cisco Email Security deployment</description>
+  <fieldset submitButton="false" autoRun="true">
+    <input type="time" searchWhenChanged="true">
+      <default>
+        <earliestTime>-60m@m</earliestTime>
+        <latestTime>now</latestTime>
+      </default>
+    </input>
+  </fieldset>
+  <row grouping="3">
+    <single>
+      <title>Injected Messages</title>
+      <searchString>sourcetype=esa_status | rex field=_raw "InjMsg\s(?&lt;injected_messages&gt;\d+)\s"  | table injected_messages</searchString>
+      <earliestTime>rt-1m</earliestTime>
+      <latestTime>rt</latestTime>
+      <option name="linkView">search</option>
+      <option name="underLabel">Number of Incoming Messages</option>
+      <option name="changeField">change</option>
+      <option name="changeFieldType">percent</option>
+    </single>
+    <single>
+      <title>Workqueue Size</title>
+      <searchString>sourcetype=esa_status | rex field=_raw "WorkQ\s(?&lt;workqueue_size&gt;\d+)\s" | table workqueue_size</searchString>
+      <earliestTime>rt-5m</earliestTime>
+      <latestTime>rt</latestTime>
+      <option name="underLabel">Number Of Messages in the Workqueue</option>
+      <option name="linkView">search</option>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">none</option>
+      <option name="drilldown">row</option>
+      <option name="count">10</option>
+      <option name="changeField">change</option>
+      <option name="changeFieldType">percent</option>
+      <option name="changeField">change</option>
+      <option name="changeFieldType">percent</option>
+    </single>
+    <single>
+      <title>Active Recipients</title>
+      <searchString>sourcetype=esa_status | rex field=_raw "ActvRcp\s(?&lt;active_recipients&gt;\d+)\s" | table active_recipients</searchString>
+      <earliestTime>rt-5m</earliestTime>
+      <latestTime>rt</latestTime>
+      <option name="underLabel">Number of Messages Queued for Delivery</option>
+      <option name="linkView">search</option>
+      <option name="changeField">change</option>
+      <option name="changeFieldType">percent</option>
+    </single>
+  </row>
+  <row>
+    <chart>
+      <title>Incoming Mail Summary</title>
+      <searchString>sourcetype="cisco_esa"  | transaction keepevicted=true icid mid  | search policy_direction="inbound"  | eval threat_reason=coalesce( case(spam_verdict="positive","spam", vof_verdict="positive", "outbreak", av_verdict="positive","viral" ), "clean")  | top threat_reason</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">pie</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.chart.seriesColors">[0x9C4B4B,0x4C674F,0x387EA4,0xAFAE2E,0xD76034]</option>      
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+    <chart>
+      <title>Incoming Mail Graph</title>
+      <searchString>sourcetype="cisco_esa"  | transaction keepevicted=true icid mid  | search policy_direction="inbound"  | eval threat_reason=coalesce( case(spam_verdict="positive","spam", vof_verdict="positive", "outbreak", av_verdict="positive","viral" ), "clean") | timechart count by threat_reason</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">collapsed</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">column</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.chart.seriesColors">[0x9C4B4B,0x4C674F,0x387EA4,0xAFAE2E,0xD76034]</option>      
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+      <option name="charting.legend.placement">bottom</option>
+      <option name="charting.axisTitleY.text">Count by Threat</option>
+    </chart>
+  </row>
+  <row>
+    <chart>
+      <title>Outgoing Mail Summary</title>
+      <searchString>sourcetype="cisco_esa"  | transaction keepevicted=true icid mid  | search policy_direction="outbound"  | eval threat_reason=coalesce( case(spam_verdict="positive","spam", vof_verdict="positive", "outbreak", av_verdict="positive","viral" ), "clean")  | top threat_reason</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">pie</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.chart.seriesColors">[0x9C4B4B,0x4C674F,0x387EA4,0xAFAE2E,0xD76034]</option>      
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+    <chart>
+      <title>Outgoing Mail Graph</title>
+      <searchString>sourcetype="cisco_esa"  | transaction keepevicted=true icid mid  | search policy_direction="outbound"  | eval threat_reason=coalesce( case(spam_verdict="positive","spam", vof_verdict="positive", "outbreak", av_verdict="positive","viral" ), "clean") | timechart count by threat_reason</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">collapsed</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">column</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.chart.seriesColors">[0x9C4B4B,0x4C674F,0x387EA4,0xAFAE2E,0xD76034]</option>      
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+      <option name="charting.legend.placement">bottom</option>
+      <option name="charting.axisTitleY.text">Count by Threat</option>
+    </chart>
+  </row>
+  <row>
+    <chart>
+      <title>Top Senders</title>
+      <searchString>sourcetype="cisco_esa" | stats count by mailfrom | uniq | sort -count | head 10</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">bar</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.chart.seriesColors">[0x9C4B4B,0x4C674F,0x387EA4,0xAFAE2E,0xD76034]</option>      
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">none</option>
+      <option name="charting.axisTitleX.text">Mail From</option>
+      <option name="charting.axisTitleY.text">Message Count</option>
+    </chart>
+    <chart>
+      <title>Top Recipients</title>
+      <searchString>sourcetype="cisco_esa" | stats count by mailto | uniq | sort -count | head 10</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">bar</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.chart.seriesColors">[0x9C4B4B,0x4C674F,0x387EA4,0xAFAE2E,0xD76034]</option>      
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">none</option>
+      <option name="charting.axisTitleX.text">Rcpt To</option>
+      <option name="charting.axisTitleY.text">Message Count</option>
+    </chart>
+  </row>
+  <row>
+    <chart>
+      <title>Messages in Quarantine</title>
+      <searchString>sourcetype="cisco_esa" | transaction icid mid | stats dc(mid) AS "Message Count" by quarantine_reason</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">pie</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.chart.seriesColors">[0x9C4B4B,0x4C674F,0x387EA4,0xAFAE2E,0xD76034]</option>      
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+    <table>
+      <title>Interesting Subjects</title>
+      <searchString>sourcetype="cisco_esa" | transaction icid mid | stats count by subject | sort -count</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">row</option>
+      <option name="count">10</option>
+    </table>
+  </row>
+  <row>
+    <table>
+      <title>Email Transactions</title>
+      <searchString>sourcetype="cisco_esa" | transaction icid mid dcid | eval threat_reason=coalesce( case(spam_verdict="positive","spam", vof_verdict="positive", "outbreak", av_verdict="positive","viral",quarantine_reason!="","quarantined"), "clean")
+ | bucket _time span=1m | stats count by mailfrom mailto subject threat_reason src_host sender_reputation policy_direction | sort -_time | where mailfrom!=""</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="list.drilldown">full</option>
+      <option name="list.wrap">1</option>
+      <option name="maxLines">5</option>
+      <option name="raw.drilldown">full</option>
+      <option name="rowNumbers">false</option>
+      <option name="table.drilldown">1</option>
+      <option name="table.sortDirection">asc</option>
+      <option name="table.wrap">1</option>
+      <option name="type">list</option>
+      <option name="wrap">true</option>
+      <option name="displayRowNumbers">false</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">cell</option>
+      <option name="count">10</option>
+    </table>
+  </row>
+</form>
