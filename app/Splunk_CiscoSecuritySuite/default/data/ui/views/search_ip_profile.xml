@@ -1,277 +1,79 @@
-<view template="dashboard.html" stylesheet="application.css" onunloadCancelJobs="False" autoCancelInterval="100">
-    <label>Profile an IP</label>
-    <module name="AccountBar" layoutPanel="appHeader"/>
-    <module name="AppBar" layoutPanel="navigationHeader"/>
-    <module name="Message" layoutPanel="messaging">
-        <param name="filter">*</param>
-        <param name="clearOnJobDispatch">False</param>
-        <param name="maxSize">1</param>
-    </module>
-    <module name="TitleBar" layoutPanel="viewHeader">
-        <param name="actionsMenuFilter">dashboard</param>
-    </module>
-
-    <module name="StaticContentSample" layoutPanel="panel_row1_col1">
-        <param name="text">Type in an IP Address of a host that you want to see the profile.</param>
-    </module>
-
-    <module name="HiddenSearch" layoutPanel="viewHeader">
-        <param name="search">src="$ip_addr$" OR src_addr="$ip_addr$" OR src_ip="$ip_addr$" OR dest="$ip_addr$" OR dest_ip="$ip_addr$" OR c_ip="$ip_addr$"
-        | eval protocol = upper(protocol)
-        | fields src src_addr src_ip src_port dest dest_ip dest_port protocol
-        log_level_desc host sourcetype eventtype event_desc
-        action actual_action
-        botnet_action description severity
-        cs_url cs_username cs_method c_ip s_hostname sc_bytes sc_http_status usage x_webcat_code_full
-        </param>
-        
-        <!-- $ip_addr$ -->
-        <module name="ExtendedFieldSearch" layoutPanel="panel_row1_col1_grp1">
-            <param name="field">IP Address</param>
-            <param name="q">*</param>
-            <param name="intention">
-                <param name="name">stringreplace</param>
-                <param name="arg">
-                    <param name="ip_addr">
-                        <param name="default">*</param>
-                    </param>
-                </param>
-            </param>
-            <param name="replacementMap">
-                <param name="arg">
-                    <param name="ip_addr">
-                        <param name="value"></param>
-                    </param>
-                </param>
-            </param>
-            
-
-
-                        
-                        <module name="TimeRangePicker" layoutPanel="panel_row1_col1_grp2">
-                            <param name="searchWhenChanged">false</param>
-                            <module name="SubmitButton">
-                                <param name="allowSoftSubmit">true</param>
-                                <param name="label">Search</param>
-                                <module name="JobStatus" layoutPanel="viewHeader">
-                                    
-                                    <!-- Displaying results area -->
-                                    <!-- For some reasons, I cannot use JSChart because the result will not show up! -->
-                                    <!-- Timechart for Event Count -->
-                                    <module name="HiddenPostProcess" group="Event Count" layoutPanel="panel_row2_col1">
-                                        <param name="search">timechart count</param>
-                                        <module name="HiddenChartFormatter">
-                                            <param name="chart">area</param>
-                                            <param name="chart.nullValueMode">zero</param>
-                                            <param name="legend.placement">none</param>
-                                            <param name="primaryAxisTitle.text">Time</param>
-                                            <module name="FlashChart"></module>
-                                        </module>
-                                    </module>
-                                    
-                                    <!-- Top 10 Event Description -->
-                                    <module name="HiddenPostProcess" group="Top 10 Events" layoutPanel="panel_row3_col1">
-                                        <param name="search">timechart limit=10 count by event_desc | fields - NULL</param>
-                                        <module name="HiddenChartFormatter">
-                                            <param name="chart">line</param>
-                                            <param name="primaryAxisTitle.text">Time</param>
-                                            <module name="FlashChart">
-                                                <module name="ConvertToDrilldownSearch">
-                                                    <module name="ViewRedirector">
-                                                        <param name="viewTarget">flashtimeline</param>
-                                                        <param name="popup">True</param>
-                                                    </module>
-                                                </module>
-                                            </module>
-                                        </module>
-                                    </module>
-                                    
-                                    <!-- Top 10 Src Ports -->
-                                    <module name="HiddenPostProcess" group="Top 10 Source Ports" layoutPanel="panel_row4_col1">
-                                        <param name="search">timechart limit=10 count by src_port | fields - NULL</param>
-                                        <module name="HiddenChartFormatter">
-                                            <param name="chart">line</param>
-                                            <param name="primaryAxisTitle.text">Time</param>
-                                            <module name="FlashChart">
-                                                <module name="ConvertToDrilldownSearch">
-                                                    <module name="ViewRedirector">
-                                                        <param name="viewTarget">flashtimeline</param>
-                                                        <param name="popup">True</param>
-                                                    </module>
-                                                </module>
-                                            </module>
-                                        </module>
-                                    </module>
-                                    
-                                    <!-- Top 10 Dest Ports -->
-                                    <module name="HiddenPostProcess" group="Top 10 Destination Ports" layoutPanel="panel_row4_col2">
-                                        <param name="search">timechart limit=10 count by dest_port | fields - NULL</param>
-                                        <module name="HiddenChartFormatter">
-                                            <param name="chart">line</param>
-                                            <param name="primaryAxisTitle.text">Time</param>
-                                            <module name="FlashChart">
-                                                <module name="ConvertToDrilldownSearch">
-                                                    <module name="ViewRedirector">
-                                                        <param name="viewTarget">flashtimeline</param>
-                                                        <param name="popup">True</param>
-                                                    </module>
-                                                </module>
-                                            </module>
-                                        </module>
-                                    </module>
-                                    
-                                    <!-- Count by Protocols -->
-                                    <module name="HiddenPostProcess" group="Count by Protocols" layoutPanel="panel_row5_col1">
-                                        <param name="search">timechart count by protocol | fields - NULL</param>
-                                        <module name="HiddenChartFormatter">
-                                            <param name="chart">line</param>
-                                            <param name="primaryAxisTitle.text">Time</param>
-                                            <module name="FlashChart">
-                                                <module name="ConvertToDrilldownSearch">
-                                                    <module name="ViewRedirector">
-                                                        <param name="viewTarget">flashtimeline</param>
-                                                        <param name="popup">True</param>
-                                                    </module>
-                                                </module>
-                                            </module>
-                                        </module>
-                                    </module>
-                                    
-                                    <!-- Count by Log Descriptions -->
-                                    <module name="HiddenPostProcess" group="Count by Log Descriptions" layoutPanel="panel_row5_col2">
-                                        <param name="search">timechart count by log_level_desc | fields - NULL</param>
-                                        <module name="HiddenChartFormatter">
-                                            <param name="chart">line</param>
-                                            <param name="primaryAxisTitle.text">Time</param>
-                                            <module name="FlashChart">
-                                                <module name="ConvertToDrilldownSearch">
-                                                    <module name="ViewRedirector">
-                                                        <param name="viewTarget">flashtimeline</param>
-                                                        <param name="popup">True</param>
-                                                    </module>
-                                                </module>
-                                            </module>
-                                        </module>
-                                    </module>
-                                    
-                                    <!-- Count by Firewall Actions -->
-                                    <module name="HiddenPostProcess" group="Count by Firewall Actions" layoutPanel="panel_row6_col1">
-                                        <param name="search">timechart count by actual_action | fields - NULL</param>
-                                        <module name="HiddenChartFormatter">
-                                            <param name="chart">line</param>
-                                            <param name="primaryAxisTitle.text">Time</param>
-                                            <module name="FlashChart">
-                                                <module name="ConvertToDrilldownSearch">
-                                                    <module name="ViewRedirector">
-                                                        <param name="viewTarget">flashtimeline</param>
-                                                        <param name="popup">True</param>
-                                                    </module>
-                                                </module>
-                                            </module>
-                                        </module>
-                                    </module>
-                                    
-                                    <!-- Count by Usages -->
-                                    <module name="HiddenPostProcess" group="Count by Usages" layoutPanel="panel_row7_col1">
-                                        <param name="search">timechart count by usage | fields - NULL</param>
-                                        <module name="HiddenChartFormatter">
-                                            <param name="chart">line</param>
-                                            <param name="primaryAxisTitle.text">Time</param>
-                                            <module name="FlashChart">
-                                                <module name="ConvertToDrilldownSearch">
-                                                    <module name="ViewRedirector">
-                                                        <param name="viewTarget">flashtimeline</param>
-                                                        <param name="popup">True</param>
-                                                    </module>
-                                                </module>
-                                            </module>
-                                        </module>
-                                    </module>
-                                    
-                                    <!-- Count by Web Categories -->
-                                    <module name="HiddenPostProcess" group="Count by Web Categories" layoutPanel="panel_row7_col2">
-                                        <param name="search">timechart count by x_webcat_code_full | fields - NULL</param>
-                                        <module name="HiddenChartFormatter">
-                                            <param name="chart">line</param>
-                                            <param name="primaryAxisTitle.text">Time</param>
-                                            <module name="FlashChart">
-                                                <module name="ConvertToDrilldownSearch">
-                                                    <module name="ViewRedirector">
-                                                        <param name="viewTarget">flashtimeline</param>
-                                                        <param name="popup">True</param>
-                                                    </module>
-                                                </module>
-                                            </module>
-                                        </module>
-                                    </module>
-                                    
-                                    <!-- Top 10 Users -->
-                                    <module name="HiddenPostProcess" group="Top 10 Users" layoutPanel="panel_row8_col1">
-                                        <param name="search">timechart count by cs_username | fields - NULL</param>
-                                        <module name="HiddenChartFormatter">
-                                            <param name="chart">line</param>
-                                            <param name="primaryAxisTitle.text">Time</param>
-                                            <module name="FlashChart">
-                                                <module name="ConvertToDrilldownSearch">
-                                                    <module name="ViewRedirector">
-                                                        <param name="viewTarget">flashtimeline</param>
-                                                        <param name="popup">True</param>
-                                                    </module>
-                                                </module>
-                                            </module>
-                                        </module>
-                                    </module>
-                                    
-                                    <!-- Top 10 Requested Websites -->
-                                    <module name="HiddenPostProcess" group="Top 10 Requested Websites" layoutPanel="panel_row8_col2">
-                                        <param name="search">timechart count by s_hostname | fields - NULL</param>
-                                        <module name="HiddenChartFormatter">
-                                            <param name="chart">line</param>
-                                            <param name="primaryAxisTitle.text">Time</param>
-                                            <module name="FlashChart">
-                                                <module name="ConvertToDrilldownSearch">
-                                                    <module name="ViewRedirector">
-                                                        <param name="viewTarget">flashtimeline</param>
-                                                        <param name="popup">True</param>
-                                                    </module>
-                                                </module>
-                                            </module>
-                                        </module>
-                                    </module>
-                                    
-                                    <!-- SimpleResultsTable shows detailed events -->
-                                    <module name="Paginator" layoutPanel="panel_row9_col1">
-                                        <param name="count">10</param>
-                                        <param name="entityName">results</param>
-                                        <module name="EnablePreview" group="Matching events">
-                                            <param name="enable">true</param>
-                                            <param name="display">false</param>
-                                            <module name="SimpleResultsTable">
-                                                <param name="count">20</param>
-                                                <param name="entityName">results</param>
-                                                <param name="drilldown">row</param>
-                                                <module name="ConvertToDrilldownSearch">
-                                                    <module name="ViewRedirector">
-                                                        <param name="viewTarget">flashtimeline</param>
-                                                        <param name="popup">True</param>
-                                                    </module>
-                                                </module>
-                                            </module>
-                                            <!-- Bottom Paginator -->
-                                            <module name="Paginator">
-                                                <param name="entityName">results</param>
-                                            </module>
-                                            <module name="ViewRedirectorLink">
-                                                <param name="viewTarget">flashtimeline</param>
-                                            </module>
-                                        </module> <!-- EnablePreview -->
-                                    </module> <!-- end Paginator -->
-                                    
-                                </module> <!-- JobStatus -->
-                            </module> <!-- SubmitButton -->
-                        </module> <!-- TimeRangePicker -->
-                        
-                    
-        </module> <!-- end ExtendedFieldSearch src_addr -->
-    </module> <!-- end HiddenSearch -->
-</view>
+<form stylesheet="application.css">
+  <label>Profile an IP</label>
+  <description>Filter security events by common criteria</description>
+  <fieldset autoRun="true" submitButton="false">
+    <!--<input type="dropdown" token="username" searchWhenChanged="true">
+      <label>Select a User:</label>
+      <prefix>user_id="</prefix>
+      <suffix>"</suffix>
+      <default>*</default>
+      <choice value="*">All</choice>
+      <populatingSearch fieldForValue="username" fieldForLabel="username" earliest="-24h" latest="now">
+        <![CDATA[sourcetype=cisco* | stats count by user_id]]>
+      </populatingSearch>
+    </input>-->
+    <input type="text" token="addr">
+      <label>Enter a Network Address</label>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="sourcetype" searchWhenChanged="true">
+      <label>Select a Sourcetype:</label>
+      <prefix>"</prefix>
+      <suffix>"</suffix>
+      <default>*</default>
+      <choice value="*">All</choice>
+      <populatingSearch fieldForValue="sourcetype" fieldForLabel="sourcetype" earliest="-24h" latest="now">
+        <![CDATA[sourcetype=cisco* | stats count by sourcetype]]>
+      </populatingSearch>
+    </input>
+    <input type="dropdown" token="num_events" searchWhenChanged="true">
+      <label>Number of Raw Events:</label>
+      <default>100</default>
+      <choice value="0">All</choice>
+      <choice value="10">10</choice>
+      <choice value="100">100</choice>
+      <choice value="1000">1000</choice>
+      <choice value="10000">10000</choice>
+    </input>    
+    <input type="time" searchWhenChanged="true">
+      <default>
+        <earliestTime>-24h@h</earliestTime>
+        <latestTime>now</latestTime>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <chart>
+      <title>Security Events: Host $addr$ and Sourcetype $sourcetype$</title>
+      <searchString>sourcetype=$sourcetype$ (src_ip=$addr$ OR dest_ip=$addr$) | timechart count by product</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.chart">column</option>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+  </row>
+  <row>
+    <table>
+      <title>Raw Events: Host $addr$ and Sourcetype $sourcetype$</title>
+      <searchString>sourcetype=$sourcetype$ (src_ip=$addr$ OR dest_ip=$addr$) | table _time, user_id, product, host, _raw | head limit=$num_events$</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="wrap">true</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">cell</option>
+      <option name="count">0</option>
+      <option name="rowNumbers">false</option>
+    </table>
+  </row>
+</form><!-- Timechart for Event Count --><!-- Top 10 Event Description --><!-- Top 10 Src Ports --><!-- Top 10 Dest Ports --><!-- Count by Protocols --><!-- Count by Log Descriptions --><!-- Count by Firewall Actions --><!-- Count by Usages --><!-- Count by Web Categories --><!-- Top 10 Users --><!-- Top 10 Requested Websites -->

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<nav>
+<nav color="#29688A">
 	<collection label="Splunk for Cisco Security">
         <view name="cisco_security_overview" default="true"/>
 		<view name="gc_overview" />
