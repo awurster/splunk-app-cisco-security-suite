@@ -36,7 +36,6 @@
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="charting.chart.stackMode">default</option>
-      <option name="charting.chart.seriesColors">[0x9C4B4B,0x387EA4,0xAFAE2E,0x4C674F,0xD76034,0x89B4CC,0x91CC9F,0x574630,0xEBBB91,0x9E7395]</option>      
       <option name="charting.axisTitleX.visibility">collapsed</option>
       <option name="charting.axisTitleY.visibility">collapsed</option>
       <option name="charting.axisLabelsX.visibility">hide</option>
@@ -72,7 +71,6 @@
       <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
       <option name="charting.chart.stackMode">default</option>
       <option name="charting.chart.style">shiny</option>
-      <option name="charting.chart.seriesColors">[0x9C4B4B,0x387EA4,0xAFAE2E,0x4C674F,0xD76034,0x89B4CC,0x91CC9F,0x574630,0xEBBB91,0x9E7395]</option>      
       <option name="charting.drilldown">all</option>
       <option name="charting.layout.splitSeries">0</option>
       <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
@@ -92,7 +90,6 @@
       <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
       <option name="charting.chart.stackMode">default</option>
       <option name="charting.chart.style">shiny</option>
-      <option name="charting.chart.seriesColors">[0x9C4B4B,0x387EA4,0xAFAE2E,0x4C674F,0xD76034,0x89B4CC,0x91CC9F,0x574630,0xEBBB91,0x9E7395]</option>      
       <option name="charting.drilldown">all</option>
       <option name="charting.layout.splitSeries">0</option>
       <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
@@ -137,4 +134,3 @@
   </row>
   
 </form>
-

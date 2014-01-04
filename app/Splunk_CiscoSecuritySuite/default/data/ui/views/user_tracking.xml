@@ -1,0 +1,83 @@
+<form stylesheet="application.css">
+  <label>Track a User or Device</label>
+  <description>Filter security events by common criteria</description>
+  <fieldset autoRun="true" submitButton="false">
+    <input type="text" token="user_id">
+      <label>Enter a User ID</label>
+      <default>*</default>
+    </input>
+    <input type="text" token="src_mac">
+      <label>Enter a MAC Address</label>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="tx_search" searchWhenChanged="true">
+      <label>Select a Transaction Key</label>
+      <default>|</default>
+      <choice value="| ">None</choice>
+      <choice value="| transaction Acct_Session_Id |">RADIUS Session ID</choice>
+      <choice value="| transaction dest_url |">Destination URL</choice>
+      <choice value="| transaction dest_domain |">Destination Domain</choice>
+      <choice value="| transaction dest_host |">Destination Host</choice>
+      <choice value="| transaction host |">Logging Host</choice>
+    </input>
+    <input type="dropdown" token="sourcetype" searchWhenChanged="true">
+      <label>Select a Sourcetype:</label>
+      <prefix>"</prefix>
+      <suffix>"</suffix>
+      <default>*</default>
+      <choice value="*">All</choice>
+      <populatingSearch fieldForValue="sourcetype" fieldForLabel="sourcetype" earliest="-24h" latest="now">
+        <![CDATA[sourcetype=cisco* | stats count by sourcetype]]>
+      </populatingSearch>
+    </input>
+    <input type="dropdown" token="num_events" searchWhenChanged="true">
+      <label>Number of Raw Events:</label>
+      <default>100</default>
+      <choice value="0">All</choice>
+      <choice value="10">10</choice>
+      <choice value="100">100</choice>
+      <choice value="1000">1000</choice>
+      <choice value="10000">10000</choice>
+    </input>    
+    <input type="time" searchWhenChanged="true">
+      <default>
+        <earliestTime>-24h@h</earliestTime>
+        <latestTime>now</latestTime>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <chart>
+      <title>Security Events: Sourcetype $sourcetype$</title>
+      <searchString>sourcetype=$sourcetype$ (user_id=$user_id$ OR src_mac=$src_mac$) $tx_search$ timechart count by product</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.chart">column</option>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+  </row>
+  <row>
+    <table>
+      <title>Raw Events: Sourcetype $sourcetype$</title>
+      <searchString>sourcetype=$sourcetype$ (user_id=$user_id$ OR src_mac=$src_mac$) $tx_search$ table _time, user_id, product, host, _raw | head limit=$num_events$</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="wrap">true</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">cell</option>
+      <option name="count">0</option>
+      <option name="rowNumbers">false</option>
+    </table>
+  </row>
+</form>

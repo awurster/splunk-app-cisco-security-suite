@@ -20,7 +20,7 @@
       <option name="charting.axisTitleY.visibility">visible</option>
       <option name="charting.axisX.scale">linear</option>
       <option name="charting.axisY.scale">linear</option>
-      <option name="charting.chart">area</option>
+      <option name="charting.chart">column</option>
       <option name="charting.chart.nullValueMode">zero</option>
       <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
       <option name="charting.chart.stackMode">stacked</option>
@@ -28,15 +28,19 @@
       <option name="charting.drilldown">all</option>
       <option name="charting.layout.splitSeries">0</option>
       <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
-      <option name="charting.legend.placement">bottom</option>
+      <option name="charting.legend.placement">right</option>
       <option name="charting.axisTitleY.text"># of Transactions</option>
     </chart>
     <chart>
-      <title>Web Security Threats</title>
-      <searchString>sourcetype="cisco_wsa_*" | stats count by threat_reason</searchString>
+      <title>Blocked Transaction Summary</title>
+      <searchString>sourcetype="cisco_wsa_*"  action!="allow" | stats count by cause</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
-      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">none</option>
+      <option name="drilldown">cell</option>
+      <option name="charting.axisTitleX.visibility">collapsed</option>
       <option name="charting.axisTitleY.visibility">visible</option>
       <option name="charting.axisX.scale">linear</option>
       <option name="charting.axisY.scale">linear</option>
@@ -47,8 +51,8 @@
       <option name="charting.chart.style">shiny</option>
       <option name="charting.drilldown">all</option>
       <option name="charting.layout.splitSeries">0</option>
-      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
-      <option name="charting.legend.placement">right</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+      <option name="charting.legend.placement">bottom</option>
     </chart>
   </row>
   <row>
@@ -72,8 +76,27 @@
       <option name="charting.legend.placement">right</option>
     </chart>
     <chart>
+      <title>Web Security Threats</title>
+      <searchString>sourcetype="cisco_wsa_*" threat_reason!="-" | stats count by threat_reason</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">pie</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+    <chart>
       <title>Application Visibility and Control</title>
-      <searchString>eventtype=ironport_proxy | stats count by x_avc_app</searchString>
+      <searchString>eventtype=ironport_proxy x_avc_app!="-" x_avc_app!="Unknown" | stats count by x_avc_app</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="charting.axisTitleX.visibility">visible</option>
@@ -93,8 +116,30 @@
   </row>
   <row>
     <chart>
+      <title>Traffic Mix by Reputation</title>
+      <searchString>sourcetype="cisco_wsa_*" | eval reputation=if(x_wbrs_score="-","unknown",x_wbrs_score) | bucket reputation bins=21 | stats count by reputation</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.text"># of Transactions</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">column</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+      <option name="charting.legend.placement">none</option>
+    </chart>
+  </row>
+  <row>
+    <chart>
       <title>Top Users</title>
-      <searchString>eventtype=ironport_proxy | eval cs_username=if(cs_username="-",c_ip,cs_username) | top cs_username</searchString>
+      <searchString>sourcetype=cisco_wsa* | eval user=if(cs_username="-",c_ip,user_id) | stats count(eval(action="block")) as "Blocked" count(eval(action="allow")) as "Allowed" by user | sort 10 -Allowed -Blocked</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="charting.axisTitleX.visibility">visible</option>
@@ -104,18 +149,20 @@
       <option name="charting.chart">bar</option>
       <option name="charting.chart.nullValueMode">gaps</option>
       <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
-      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.stackMode">stacked</option>
       <option name="charting.chart.style">shiny</option>
       <option name="charting.drilldown">all</option>
       <option name="charting.layout.splitSeries">0</option>
-      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
-      <option name="charting.legend.placement">none</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+      <option name="charting.legend.placement">bottom</option>
       <option name="charting.axisTitleY.text">Transactions</option>
       <option name="charting.axisTitleX.text">Username or IP Address</option>
     </chart>
+  </row>
+  <row>
     <table>
       <title>Top Destination Domains by Bytecount</title>
-      <searchString>eventtype=ironport_proxy | eval bytes_in = bytes_in/1024/1024 | stats sum(bytes_in) AS "Size in MB" by dest_domain | sort -"Size in MB"</searchString>
+      <searchString>eventtype=ironport_proxy  | stats sum(bytes_in) as "size" by dest_domain | sort -size | `resize-bytes-num("size", size)`</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="charting.axisTitleX.visibility">visible</option>
@@ -133,36 +180,15 @@
       <option name="charting.legend.placement">right</option>
       <option name="wrap">true</option>
       <option name="rowNumbers">false</option>
-      <option name="dataOverlayMode">heatmap</option>
+      <option name="dataOverlayMode">none</option>
       <option name="drilldown">row</option>
       <option name="count">10</option>
     </table>
   </row>
   <row>
-      <chart>
-      <title>Requests Per Second</title>
-      <searchString>sourcetype=wsa_accesslogs | eval count=1 | timechart per_second(count) AS "Requests Per Second" by host</searchString>
-      <earliestTime>$earliest$</earliestTime>
-      <latestTime>$latest$</latestTime>
-      <option name="charting.axisTitleX.visibility">visible</option>
-      <option name="charting.axisTitleY.visibility">visible</option>
-      <option name="charting.axisX.scale">linear</option>
-      <option name="charting.axisY.scale">linear</option>
-      <option name="charting.chart">pie</option>
-      <option name="charting.chart.nullValueMode">gaps</option>
-      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
-      <option name="charting.chart.stackMode">stacked</option>
-      <option name="charting.chart.style">shiny</option>
-      <option name="charting.drilldown">all</option>
-      <option name="charting.layout.splitSeries">0</option>
-      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
-      <option name="charting.legend.placement">right</option>
-    </chart>
-  </row>
-  <row>
     <table>
       <title>Recent Web Security Transactions</title>
-      <searchString>sourcetype="cisco_wsa*" | bucket _time span=1m | eval cs_username=if(cs_username=="-",c_ip,cs_username) | stats count by cs_username dest_domain identity access_policy http_method sc_http_status sc_result action cause | sort -_time</searchString>
+      <searchString>sourcetype="cisco_wsa*" | bucket _time span=1m | `fill-user-id` | stats count by user_id dest_domain identity access_policy http_method sc_http_status sc_result action cause | sort -_time</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="charting.axisTitleX.visibility">visible</option>

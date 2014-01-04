@@ -1,0 +1,969 @@
+{
+    "objectNameList": [
+        "wsa_base_search"
+    ], 
+    "objectSummary": {
+        "Interfaces": 0, 
+        "Interface Implementations": 0, 
+        "Search-Based": 1, 
+        "Transaction-Based": 0, 
+        "Event-Based": 0
+    }, 
+    "displayName": "WSA Access Logs", 
+    "objects": [
+        {
+            "objectName": "wsa_base_search", 
+            "baseSearch": "sourcetype=cisco_wsa_*", 
+            "parentName": "BaseSearch", 
+            "comment": "", 
+            "displayName": "WSA Base Search", 
+            "calculations": [
+                {
+                    "inputField": "dest_ip", 
+                    "comment": "", 
+                    "outputFields": [
+                        {
+                            "lookupOutputFieldName": "lon", 
+                            "fieldName": "dest_ip_lon", 
+                            "hidden": false, 
+                            "type": "number", 
+                            "displayName": "dest_ip_lon", 
+                            "comment": "", 
+                            "multivalue": false, 
+                            "required": true
+                        }, 
+                        {
+                            "lookupOutputFieldName": "lat", 
+                            "fieldName": "dest_ip_lat", 
+                            "hidden": false, 
+                            "type": "number", 
+                            "displayName": "dest_ip_lat", 
+                            "comment": "", 
+                            "multivalue": false, 
+                            "required": true
+                        }, 
+                        {
+                            "lookupOutputFieldName": "City", 
+                            "fieldName": "dest_ip_City", 
+                            "hidden": false, 
+                            "type": "string", 
+                            "displayName": "dest_ip_City", 
+                            "comment": "", 
+                            "multivalue": false, 
+                            "required": true
+                        }, 
+                        {
+                            "lookupOutputFieldName": "Region", 
+                            "fieldName": "dest_ip_Region", 
+                            "hidden": false, 
+                            "type": "string", 
+                            "displayName": "dest_ip_Region", 
+                            "comment": "", 
+                            "multivalue": false, 
+                            "required": true
+                        }, 
+                        {
+                            "lookupOutputFieldName": "Country", 
+                            "fieldName": "dest_ip_Country", 
+                            "hidden": false, 
+                            "type": "string", 
+                            "displayName": "dest_ip_Country", 
+                            "comment": "", 
+                            "multivalue": false, 
+                            "required": true
+                        }
+                    ], 
+                    "calculationType": "GeoIP", 
+                    "calculationID": "tvygk04p19hehfr"
+                }
+            ], 
+            "constraints": [], 
+            "fields": [
+                {
+                    "fieldName": "access_policy", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "access_policy", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "acl_decision_tag", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "acl_decision_tag", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "action", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "action", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "bytes_in", 
+                    "hidden": false, 
+                    "type": "number", 
+                    "displayName": "bytes_in", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "c_ip", 
+                    "hidden": false, 
+                    "type": "ipv4", 
+                    "displayName": "c_ip", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "cache", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "cache", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "cause", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "cause", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "cs_method", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "cs_method", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "cs_mime_type", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "cs_mime_type", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "cs_url", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "cs_url", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "cs_user_agent", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "cs_user_agent", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "cs_username", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "cs_username", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "data_security_policy", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "data_security_policy", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "date_hour", 
+                    "hidden": false, 
+                    "type": "number", 
+                    "displayName": "date_hour", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "date_mday", 
+                    "hidden": false, 
+                    "type": "number", 
+                    "displayName": "date_mday", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "date_minute", 
+                    "hidden": false, 
+                    "type": "number", 
+                    "displayName": "date_minute", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "date_month", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "date_month", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "date_second", 
+                    "hidden": false, 
+                    "type": "number", 
+                    "displayName": "date_second", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "date_wday", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "date_wday", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "date_year", 
+                    "hidden": false, 
+                    "type": "number", 
+                    "displayName": "date_year", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "date_zone", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "date_zone", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "dest_domain", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "dest_domain", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "dest_host", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "dest_host", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "dest_ip", 
+                    "hidden": false, 
+                    "type": "ipv4", 
+                    "displayName": "dest_ip", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "duration", 
+                    "hidden": false, 
+                    "type": "number", 
+                    "displayName": "duration", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "end_time", 
+                    "hidden": false, 
+                    "type": "number", 
+                    "displayName": "end_time", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "eventtype", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "eventtype", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "external_dlp_policy", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "external_dlp_policy", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "hierarchy", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "hierarchy", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "host", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "host", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "http_content_type", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "http_content_type", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "http_method", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "http_method", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "http_result", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "http_result", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "http_user_agent", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "http_user_agent", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "identity", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "identity", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "ids_type", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "ids_type", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "index", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "index", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "linecount", 
+                    "hidden": false, 
+                    "type": "number", 
+                    "displayName": "linecount", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "outbound_malware_policy", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "outbound_malware_policy", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "product", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "product", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "punct", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "punct", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "referer", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "referer", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "routing_policy", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "routing_policy", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "s_from", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "s_from", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "s_hierarchy", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "s_hierarchy", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "sc_bytes", 
+                    "hidden": false, 
+                    "type": "number", 
+                    "displayName": "sc_bytes", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "sc_http_status", 
+                    "hidden": false, 
+                    "type": "number", 
+                    "displayName": "sc_http_status", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "sc_result", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "sc_result", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "severity", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "severity", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "source", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "source", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "sourcetype", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "sourcetype", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "splunk_server", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "splunk_server", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "src", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "src", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "src_ip", 
+                    "hidden": false, 
+                    "type": "ipv4", 
+                    "displayName": "src_ip", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "status", 
+                    "hidden": false, 
+                    "type": "number", 
+                    "displayName": "status", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "tag", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "tag", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "tag::eventtype", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "tag::eventtype", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "threat_reason", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "threat_reason", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "url", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "url", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "usage", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "usage", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "user", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "user", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "user_id", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "user_id", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "vendor", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "vendor", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_acl_tag", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_acl_tag", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_avc_app", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_avc_app", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_avc_behavior", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_avc_behavior", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_avc_type", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_avc_type", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_avg_bw", 
+                    "hidden": false, 
+                    "type": "number", 
+                    "displayName": "x_avg_bw", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_bw_throttled", 
+                    "hidden": false, 
+                    "type": "number", 
+                    "displayName": "x_bw_throttled", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_icap_verdict", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_icap_verdict", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_ids_verdict", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_ids_verdict", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_mcafee_av_virustype", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_mcafee_av_virustype", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_mcafee_detecttype", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_mcafee_detecttype", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_mcafee_filename", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_mcafee_filename", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_mcafee_scan_error", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_mcafee_scan_error", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_mcafee_scanverdict", 
+                    "hidden": false, 
+                    "type": "number", 
+                    "displayName": "x_mcafee_scanverdict", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_mcafee_virus_name", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_mcafee_virus_name", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_req_dvs_threat_name", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_req_dvs_threat_name", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_request_rewrite", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_request_rewrite", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_resp_dvs_threat_name", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_resp_dvs_threat_name", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_resp_dvs_verdictname", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_resp_dvs_verdictname", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_scan_verdict", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_scan_verdict", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_sophos_filename", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_sophos_filename", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_sophos_scancode", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_sophos_scancode", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_sophos_scanverdict", 
+                    "hidden": false, 
+                    "type": "number", 
+                    "displayName": "x_sophos_scanverdict", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_sophos_virus_name", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_sophos_virus_name", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_user_type", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_user_type", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_wbrs_score", 
+                    "hidden": false, 
+                    "type": "number", 
+                    "displayName": "x_wbrs_score", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_wbrs_threat_type", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_wbrs_threat_type", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_webcat_code_abbr", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_webcat_code_abbr", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_webcat_code_full", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_webcat_code_full", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_webcat_req_code_abbr", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_webcat_req_code_abbr", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_webcat_resp_code_abbr", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_webcat_resp_code_abbr", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_webroot_scanverdict", 
+                    "hidden": false, 
+                    "type": "number", 
+                    "displayName": "x_webroot_scanverdict", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_webroot_spyid", 
+                    "hidden": false, 
+                    "type": "number", 
+                    "displayName": "x_webroot_spyid", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_webroot_threat_name", 
+                    "hidden": false, 
+                    "type": "string", 
+                    "displayName": "x_webroot_threat_name", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_webroot_trace_id", 
+                    "hidden": false, 
+                    "type": "number", 
+                    "displayName": "x_webroot_trace_id", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }, 
+                {
+                    "fieldName": "x_webroot_trr", 
+                    "hidden": false, 
+                    "type": "number", 
+                    "displayName": "x_webroot_trr", 
+                    "comment": "", 
+                    "multivalue": false, 
+                    "required": false
+                }
+            ]
+        }
+    ], 
+    "modelName": "wsa_access_logs", 
+    "description": "Data model for squid-type access logs via syslog."
+}

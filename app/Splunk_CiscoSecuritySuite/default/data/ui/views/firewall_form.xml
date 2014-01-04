@@ -1,72 +1,180 @@
-<form>
+<form stylesheet="application.css">
   <label>Firewall Form Search</label>
-  <!-- define master search template; leave time unbounded so that the time input can be used -->
   <fieldset>
-    <input type="text" token="host">
-      <label>Host</label>
+    <input type="time" searchWhenChanged="true">
+      <default>
+        <earliestTime>-24h@h</earliestTime>
+        <latestTime>now</latestTime>
+      </default>
     </input>
-    <input type="text" token="action">
-      <label>Action</label>
-    </input>
-    <input type="text" token="src_ip">
+    <input type="text" token="f_src_ip" searchWhenChanged="true">
       <label>Source IP</label>
-    </input> 
-    <input type="text" token="dest_ip">
+      <default>*</default>
+    </input>
+    <input type="text" token="f_dest_ip" searchWhenChanged="true">
       <label>Destination IP</label>
+      <default>*</default>
     </input>
-    <input type="text" token="src_port">
+    <input type="text" token="f_src_port" searchWhenChanged="true">
       <label>Source Port</label>
-      <prefix>src_port</prefix>
+      <default>*</default>
     </input>
-    <input type="text" token="dest_port">
+    <input type="text" token="f_dest_port" searchWhenChanged="true">
       <label>Dest Port</label>
+      <default>*</default>
     </input>
-    <!-- add default TimePicker -->
-    <input type="time" />
+    <input type="dropdown" token="f_transport" searchWhenChanged="true">
+      <label>Transport</label>
+      <default>*</default>
+      <choice value="*">All</choice>
+      <choice value="tcp">TCP</choice>
+      <choice value="udp">UDP</choice>
+      <choice value="icmp">ICMP</choice>
+    </input>
+    <input type="dropdown" token="f_action" searchWhenChanged="true">
+      <label>Action</label>
+      <default>*</default>
+      <choice value="*">All</choice>
+      <choice value="allowed">Allow</choice>
+      <choice value="blocked">Block</choice>
+    </input>
+    <input type="dropdown" token="f_host" searchWhenChanged="true">
+      <label>Host</label>
+      <default>*</default>
+      <choice value="*">All</choice>
+      <populatingSearch fieldForValue="host" fieldForLabel="host">
+        <![CDATA[eventtype=cisco_firewall* | stats count by host]]>
+      </populatingSearch>
+    </input>
+    <input type="dropdown" token="n" searchWhenChanged="true">
+      <label>Number of Raw Events:</label>
+      <default>100</default>
+      <choice value="0">All</choice>
+      <choice value="10">10</choice>
+      <choice value="100">100</choice>
+      <choice value="1000">1000</choice>
+      <choice value="10000">10000</choice>
+    </input>
   </fieldset>
+  <searchTemplate>eventtype=cisco_firewall* host=$f_host$ action=$f_action$ src_ip=$f_src_ip$ dest_ip=$f_dest_ip$ src_port=$f_src_port$ dest_port=$f_dest_port$ transport=$f_transport$</searchTemplate>
   <row>
     <chart>
       <title>Events over Time</title>
-      <searchTemplate>eventtype=cisco_firewall $host$ $action$ $src_ip$ $dest_ip$ $src_port$ $dest_port$ | timechart count </searchTemplate>
-      <option name="charting.chart">line</option>
-      <option name="charting.legend.placement">right</option>
+      <searchPostProcess>timechart count by action</searchPostProcess>
+      <option name="charting.chart">column</option>
+      <option name="charting.legend.placement">bottom</option>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
     </chart>
   </row>
   <row>
     <chart>
       <title>Events by Host</title>
-      <searchTemplate>eventtype=cisco_firewall $host$ $action$ $src_ip$ $dest_ip$ $src_port$ $dest_port$| stats count by host</searchTemplate>
-      <option name="charting.chart">bar</option>
-      <option name="charting.legend.placement">right</option>
+      <searchPostProcess>stats count by host</searchPostProcess>
+      <option name="charting.chart">pie</option>
+      <option name="charting.legend.placement">none</option>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
     </chart>
     <chart>
       <title>Events by Action</title>
-      <searchTemplate>eventtype=cisco_firewall $host$ $action$ $src_ip$ $dest_ip$ $src_port$ $dest_port$| stats count by eventtype</searchTemplate>
-      <option name="charting.chart">bar</option>
-      <option name="charting.legend.placement">right</option>
+      <searchPostProcess>stats count by action</searchPostProcess>
+      <option name="charting.chart">pie</option>
+      <option name="charting.legend.placement">none</option>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+    </chart>
+    <chart>
+      <title>Events by Protocol</title>
+      <searchPostProcess>eval protocol=lower(transport) | lookup services protocol AS protocol port AS dest_port OUTPUT service | eval service=coalesce(service,"unknown") | stats count by service</searchPostProcess>
+      <option name="charting.chart">pie</option>
+      <option name="charting.legend.placement">none</option>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
     </chart>
   </row>
   <row>
     <chart>
       <title>Denies by Source</title>
-      <searchTemplate>eventtype=cisco_firewall eventtype=firewall-deny $host$ $action$ $src_ip$ $dest_ip$ $src_port$ $dest_port$| stats count by src_ip</searchTemplate>
+      <searchPostProcess>stats count by src_ip | head 10</searchPostProcess>
       <option name="charting.chart">pie</option>
       <option name="charting.legend.placement">right</option>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
     </chart>
     <chart>
       <title>Denies by Destination</title>
-      <searchTemplate>eventtype=cisco_firewall eventtype=firewall-deny $host$ $action$ $src_ip$ $dest_ip$ $src_port$ $dest_port$| stats count by dest_ip | head 20</searchTemplate>
+      <searchPostProcess>stats count by dest_ip | head 10</searchPostProcess>
       <option name="charting.chart">pie</option>
       <option name="charting.legend.placement">right</option>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
     </chart>
   </row>
   <row>
     <!-- show results as a table -->
     <table>
-      <title>Recent Firewall Events Matching Your Search Criteria</title>
-      <searchTemplate>eventtype=cisco_firewall $host$ $action$ $src_ip$ $dest_ip$ $src_port$ $dest_port$ | fields _time,host,src_ip,dest_ip,protocol,log_level_desc,event_desc</searchTemplate>
-      <option name="showPager">true</option>
+      <title>Firewall Events</title>
+      <searchPostProcess>head limit=$n$ | table _time, host, src_interface, transport, src_ip, src_port, src_sgt, dest_interface, dest_ip, dest_port, action</searchPostProcess>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">row</option>
       <option name="count">50</option>
-    </table>  
+    </table>
   </row>
 </form>

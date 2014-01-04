@@ -1,0 +1,27 @@
+{
+    "objectNameList": [
+        "email_transaction_id"
+    ], 
+    "displayName": "Email Transactions", 
+    "objectSummary": {
+        "Interface Implementations": 0, 
+        "Interfaces": 0, 
+        "Event-Based": 0, 
+        "Transaction-Based": 0, 
+        "Search-Based": 1
+    }, 
+    "description": "", 
+    "objects": [
+        {
+            "baseSearch": "sourcetype=cisco_esa | transaction icid mid dcid", 
+            "objectName": "email_transaction_id", 
+            "displayName": "Email Transactions", 
+            "parentName": "BaseSearch", 
+            "comment": "", 
+            "fields": [], 
+            "constraints": [], 
+            "calculations": []
+        }
+    ], 
+    "modelName": "Email_Transactions"
+}

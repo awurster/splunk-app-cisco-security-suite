@@ -9,7 +9,7 @@
       </default>
     </input>
   </fieldset>
-  <row grouping="3">
+  <!--<row grouping="3">
     <single>
       <title>Injected Messages</title>
       <searchString>sourcetype=esa_status | rex field=_raw "InjMsg\s(?&lt;injected_messages&gt;\d+)\s"  | table injected_messages</searchString>
@@ -47,7 +47,7 @@
       <option name="changeField">change</option>
       <option name="changeFieldType">percent</option>
     </single>
-  </row>
+  </row>-->
   <row>
     <chart>
       <title>Incoming Mail Summary</title>
@@ -64,7 +64,6 @@
       <option name="charting.chart.stackMode">default</option>
       <option name="charting.chart.style">shiny</option>
       <option name="charting.drilldown">all</option>
-      <option name="charting.chart.seriesColors">[0x9C4B4B,0x4C674F,0x387EA4,0xAFAE2E,0xD76034]</option>      
       <option name="charting.layout.splitSeries">0</option>
       <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
       <option name="charting.legend.placement">right</option>
@@ -84,7 +83,6 @@
       <option name="charting.chart.stackMode">stacked</option>
       <option name="charting.chart.style">shiny</option>
       <option name="charting.drilldown">all</option>
-      <option name="charting.chart.seriesColors">[0x9C4B4B,0x4C674F,0x387EA4,0xAFAE2E,0xD76034]</option>      
       <option name="charting.layout.splitSeries">0</option>
       <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
       <option name="charting.legend.placement">bottom</option>
@@ -106,7 +104,6 @@
       <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
       <option name="charting.chart.stackMode">default</option>
       <option name="charting.chart.style">shiny</option>
-      <option name="charting.chart.seriesColors">[0x9C4B4B,0x4C674F,0x387EA4,0xAFAE2E,0xD76034]</option>      
       <option name="charting.drilldown">all</option>
       <option name="charting.layout.splitSeries">0</option>
       <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
@@ -127,7 +124,6 @@
       <option name="charting.chart.stackMode">stacked</option>
       <option name="charting.chart.style">shiny</option>
       <option name="charting.drilldown">all</option>
-      <option name="charting.chart.seriesColors">[0x9C4B4B,0x4C674F,0x387EA4,0xAFAE2E,0xD76034]</option>      
       <option name="charting.layout.splitSeries">0</option>
       <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
       <option name="charting.legend.placement">bottom</option>
@@ -150,7 +146,6 @@
       <option name="charting.chart.stackMode">default</option>
       <option name="charting.chart.style">shiny</option>
       <option name="charting.drilldown">all</option>
-      <option name="charting.chart.seriesColors">[0x9C4B4B,0x4C674F,0x387EA4,0xAFAE2E,0xD76034]</option>      
       <option name="charting.layout.splitSeries">0</option>
       <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
       <option name="charting.legend.placement">none</option>
@@ -171,7 +166,6 @@
       <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
       <option name="charting.chart.stackMode">default</option>
       <option name="charting.chart.style">shiny</option>
-      <option name="charting.chart.seriesColors">[0x9C4B4B,0x4C674F,0x387EA4,0xAFAE2E,0xD76034]</option>      
       <option name="charting.drilldown">all</option>
       <option name="charting.layout.splitSeries">0</option>
       <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
@@ -195,7 +189,6 @@
       <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
       <option name="charting.chart.stackMode">default</option>
       <option name="charting.chart.style">shiny</option>
-      <option name="charting.chart.seriesColors">[0x9C4B4B,0x4C674F,0x387EA4,0xAFAE2E,0xD76034]</option>      
       <option name="charting.drilldown">all</option>
       <option name="charting.layout.splitSeries">0</option>
       <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
