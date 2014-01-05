@@ -10,9 +10,7 @@
     </input>
   </fieldset>
   
-  <!--<searchTemplate>
-    sourcetype=cisco* | eval src=coalesce(src_ip,src_host) | eval dest=coalesce(dest_ip,dest_host) | stats count by host product eventtype src dest _time
-  </searchTemplate>-->
+  <searchTemplate>sourcetype=cisco* | eval src=coalesce(src_ip,src_host) | eval dest=coalesce(dest_ip,dest_host) | stats count by host product eventtype sourcetype src dest _time</searchTemplate>
   
   <row>
     <map>
@@ -20,6 +18,8 @@
       <!-- use 'src_ip!="10.0.0.0/8" src_ip!="172.12.0.0/12" src_ip!="192.168.0.0/16" src_ip!="0.0.0.0/32' to filter out local IP events -->
       <!-- <searchString>sourcetype=cisco* src_ip!="10.0.0.0/8" src_ip!="172.12.0.0/12" src_ip!="192.168.0.0/16" src_ip!="0.0.0.0/32" | eval src=coalesce(src_ip,src_host) | eval dest=coalesce(dest_ip,dest_host) | iplocation src | geostats latfield=lat longfield=lon count by product</searchString>-->
       <searchName>Global Security Events</searchName>
+      <!-- use named search for now because postprocess doesnt seem to like the maps :/ . -->
+      <!--<searchPostProcess>search src_ip!="10.0.0.0/8" src_ip!="172.12.0.0/12" src_ip!="192.168.0.0/16" src_ip!="0.0.0.0/32" | iplocation src | geostats latfield=lat longfield=lon count by product</searchPostProcess>-->
       <!-- use custom colors -->
       <option name="mapping.seriesColors">[0x9C4B4B,0xD76034,0xAFAE2E,0x4C674F,0x9E7395]</option>
       <!-- adjust marker opacity and size range -->
@@ -33,6 +33,7 @@
     <chart>
       <title>Security Events Statistcs</title>
       <searchString>sourcetype=cisco* | timechart useother=true usenull=f limit=4 count by product | sort -count</searchString>
+      <!-- <searchPostProcess>timechart useother=true usenull=f limit=4 count by product | sort -count</searchPostProcess>-->
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="charting.chart.stackMode">default</option>
@@ -59,7 +60,8 @@
   <row>
     <chart>
       <title>Top Sources</title>
-      <searchString>sourcetype=cisco* | eval src=coalesce(src_ip,src_host) | eval dest=coalesce(dest_ip,dest_host) | top limit=10 src</searchString>
+      <!--<searchString>sourcetype=cisco* | eval src=coalesce(src_ip,src_host) | eval dest=coalesce(dest_ip,dest_host) | top limit=10 src</searchString>-->
+      <searchPostProcess>top limit=10 src</searchPostProcess>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="charting.axisTitleX.visibility">visible</option>
@@ -78,7 +80,8 @@
     </chart>
     <chart>
       <title>Top Destinations</title>
-      <searchString>sourcetype=cisco* | eval src=coalesce(src_ip,src_host) | eval dest=coalesce(dest_ip,dest_host) | top limit=10 dest</searchString>
+      <!--<searchString>sourcetype=cisco* | eval src=coalesce(src_ip,src_host) | eval dest=coalesce(dest_ip,dest_host) | top limit=10 dest</searchString>-->
+      <searchPostProcess>top limit=10 dest</searchPostProcess>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="charting.axisTitleX.visibility">visible</option>
@@ -95,11 +98,33 @@
       <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
       <option name="charting.legend.placement">right</option>
     </chart>
+    <chart>
+      <title>Top Threat Reason</title>
+      <!-- use a separate search for now because some sources don't have threat reason yet -->
+      <searchString>sourcetype=cisco* threat_reason!="-" | top limit=10 threat_reason</searchString>
+      <!--<searchPostProcess>top limit=10 threat_reason</searchPostProcess>-->
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">pie</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>    
   </row>
   <row>
     <table>
       <title>Security Event Stats by Sourcetype</title>
-      <searchString>sourcetype=cisco* | chart count sparkline(count) as "trending" by sourcetype | sort -count</searchString>
+      <!--<searchString>sourcetype=cisco* | chart count sparkline(count) as "trending" by sourcetype | sort -count</searchString>-->
+      <searchPostProcess>chart count sparkline(count) as "trending" by sourcetype | sort -count</searchPostProcess>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <!-- Set span for each sparkline datapoint to be 1 hour -->
@@ -122,7 +147,8 @@
     </table>
     <table>
       <title>Security Event Stats by Host</title>
-      <searchString>sourcetype=cisco* | stats count by host, product, eventtype | sort -count</searchString>
+      <!--<searchString>stats count by host, product, eventtype | sort -count</searchString>-->
+      <searchPostProcess>stats count by host, product, eventtype | sort -count</searchPostProcess>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="wrap">true</option>
