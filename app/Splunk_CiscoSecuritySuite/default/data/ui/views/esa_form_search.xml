@@ -1,255 +1,100 @@
-<view template="dashboard.html" stylesheet="application.css" onunloadCancelJobs="False" autoCancelInterval="100">
-<label>Message Tracking</label>
-<module name="AccountBar" layoutPanel="appHeader" />
-<module name="AppBar" layoutPanel="navigationHeader" />
-<module name="Message" layoutPanel="messaging">
-  <param name="filter">*</param>
-  <param name="level">error</param>
-  <param name="clearOnJobDispatch">True</param>
-  <param name="maxSize">1</param>
-</module>
-<module name="TitleBar" layoutPanel="viewHeader">
-  <param name="actionsMenuFilter">search</param>
-</module>
+<form stylesheet="application.css">
+  <label>Email Message Tracking</label>
+  <description>Tracking Email Security events</description>
+  <fieldset>
+    <input type="time" searchWhenChanged="true">
+      <default>
+        <earliestTime>-24h@h</earliestTime>
+        <latestTime>now</latestTime>
+      </default>
+    </input>
+    <input type="text" token="f_from" searchWhenChanged="true">
+      <label>Sender Address or Username</label>
+      <default>*</default>
+    </input>
+    <input type="text" token="f_to" searchWhenChanged="true">
+      <label>Recipient Address or Username</label>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="f_direction" searchWhenChanged="true">
+      <label>Direction</label>
+      <default>*</default>
+      <choice value="*">All</choice>
+      <choice value="inbound">Inbound</choice>
+      <choice value="outbound">Outbound</choice>
+    </input>
+    <!--<input type="dropdown" token="f_action" searchWhenChanged="true">
+      <label>Action</label>
+      <default>*</default>
+      <choice value="*">All</choice>-->
+    </input>
+    <input type="text" token="f_mta" searchWhenChanged="true">
+      <label>MTA Address or Hostname</label>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="f_listener" searchWhenChanged="true">
+      <label>Interface or Listener Name</label>
+      <default>*</default>
+      <choice value="*">All</choice>
+      <populatingSearch fieldForValue="recv_int_name" fieldForLabel="recv_int_name">
+        <![CDATA[eventtype=cisco_esa | stats count by recv_int_name]]>
+      </populatingSearch>
+    </input>    
+    <input type="dropdown" token="f_host" searchWhenChanged="true">
+      <label>Host</label>
+      <default>*</default>
+      <choice value="*">All</choice>
+      <populatingSearch fieldForValue="host" fieldForLabel="host">
+        <![CDATA[eventtype=cisco_esa | stats count by host]]>
+      </populatingSearch>
+    </input>
+    <input type="dropdown" token="n" searchWhenChanged="true">
+      <label>Number of Raw Events:</label>
+      <default>100</default>
+      <choice value="0">All</choice>
+      <choice value="10">10</choice>
+      <choice value="100">100</choice>
+      <choice value="1000">1000</choice>
+      <choice value="10000">10000</choice>
+    </input>
+  </fieldset>
 
-<module name="HiddenSearch" layoutPanel="mainSearchControls" >
-  <param name="search">eventtype=cisco_esa $mailTo$ $cond1$ $mailFrom$ $cond2$ $Subject$ $cond3$ $Attachment$ | stats min(_time) as MailDate, list(mailfrom) as MailFrom, list(mailto) as MailTo, list(subject) as Subject, list(attachmentname) as AttachmentName, list(attachmentsize) as AttachmentSize by host mid | sort -MailDate | convert ctime(MailDate) | fields MailDate,MailFrom, MailTo,Subject, AttachmentName, AttachmentSize, host, mid </param>
-  <module name="StaticContentSample">
-    <param name="text">To use this form search, fill out each field that you wish to search for.  If you have more than one item, make sure that you have chosen the correct boolean (AND or OR) after each term that you have selected, and leave the other booleans as the default AND.  You can use wildcards if you only know part of a field - for example, *@aol.com for to or from email, *microsoft windows* for subject, *.doc for attachment</param>
-  </module>
+    <searchTemplate>sourcetype="cisco_esa"  | transaction keepevicted=true icid mid | search host=$f_host$ src_host=$f_mta$ mailfrom=$f_from$ recv_int_name=$f_listener$ policy_direction=$f_direction$ | stats count by mailfrom mailto subject spam_verdict vof_verdict av_verdict quarantine_reason src_host sender_reputation policy_direction</searchTemplate>
 
-  <module name="ExtendedFieldSearch" layoutPanel="panel_row1_col1_grp1">
-    <param name="field">To:</param>
-    <param name="intention">
-      <param name="name">stringreplace</param>
-      <param name="arg">
-        <param name="mailTo">
-          <param name="fillOnEmpty">True</param>
-          <param name="prefix"> [ search eventtype=cisco_esa mailto=</param>
-          <param name="suffix"> | stats count by host, mid | fields host, mid | format maxresults=1000 ]</param>
-          <param name="default"></param>
-        </param>
-      </param>
-    </param>
-
-    <param name="replacementMap">
-      <param name="arg">
-        <param name="mailTo">
-          <param name="value"></param>
-        </param>
-      </param>
-    </param>
+  
+  <row>
+    <chart>
+      <title>Timechart of Results</title>
+      <searchPostProcess>timechart count(_raw)</searchPostProcess>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">collapsed</option>
+      <option name="charting.axisTitleY.text"># of Messages</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">column</option>
+      <option name="charting.chart.nullValueMode">zero</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+  </row>
     
-    <module name="StaticSelect" layoutPanel="panel_row1_col1_grp2">
-      <param name="settingToCreate">cond1</param>
-      <param name="searchWhenChanged">False</param>
-      <param name="staticFieldsToDisplay">
-        <list>
-          <param name="label"> </param>
-          <param name="value">*</param>
-        </list>
-        <list>
-          <param name="label">AND</param>
-          <param name="value">AND</param>
-        </list>
-        <list>
-          <param name="label">OR</param>
-          <param name="value">OR</param>
-        </list>
-        <list>
-          <param name="label">NOT</param>
-          <param name="value">NOT</param>
-        </list>
-      </param>
-      
-      <module name="ConvertToIntention">
-        <param name="settingToConvert">cond1</param>
-        <param name="intention">
-          <param name="name">stringreplace</param>
-          <param name="arg">
-            <param name="cond1">
-              <param name="value">$target$</param>
-              <param name="default"></param>
-              <param name="fillOnEmpty">True</param>
-            </param>
-          </param>
-        </param>
-        
-        <module name="ExtendedFieldSearch" layoutPanel="panel_row1_col1_grp3">
-          <param name="field">From:</param>
-          <param name="intention">
-            <param name="name">stringreplace</param>
-            <param name="arg">
-              <param name="mailFrom">
-                <param name="fillOnEmpty">True</param>
-                <param name="prefix">[ search eventtype=cisco_esa mailfrom=</param>
-                <param name="suffix"> | stats count by host, mid | fields host, mid | format maxresults=1000 ]</param>
-                <param name="default"></param>
-              </param>
-            </param>
-          </param>
-          
-          <param name="replacementMap">
-            <param name="arg">
-              <param name="mailFrom">
-                <param name="value"></param>
-              </param>
-            </param>
-          </param>
-          
-          <module name="StaticSelect" layoutPanel="panel_row1_col1_grp4">
-            <param name="settingToCreate">cond2</param>
-            <param name="searchWhenChanged">False</param>
-            <param name="staticFieldsToDisplay">
-              <list>
-                <param name="label"> </param>
-                <param name="value">*</param>
-              </list>
-              <list>
-                <param name="label">AND</param>
-                <param name="value">AND</param>
-              </list>
-              <list>
-                <param name="label">OR</param>
-                <param name="value">OR</param>
-              </list>
-              <list>
-                <param name="label">NOT</param>
-                <param name="value">NOT</param>
-              </list>
-            </param>
-            
-            <module name="ConvertToIntention">
-              <param name="settingToConvert">cond2</param>
-              <param name="intention">
-                <param name="name">stringreplace</param>
-                <param name="arg">
-                  <param name="cond2">
-                    <param name="value">$target$</param>
-                    <param name="default"></param>
-                    <param name="fillOnEmpty">True</param>
-                  </param>
-                </param>
-              </param>
-              
-              <module name="ExtendedFieldSearch" layoutPanel="panel_row1_col1_grp5">
-                <param name="field">Subject:</param>
-                <param name="intention">
-                  <param name="name">stringreplace</param>
-                  <param name="arg">
-                    <param name="Subject">
-                      <param name="fillOnEmpty">True</param>
-                      <param name="prefix">[search eventtype=cisco_esa subject="</param>
-                      <param name="suffix">" | stats count by host, mid | fields host, mid | format maxresults=1000]</param>
-                      <param name="default"></param>
-                    </param>
-                  </param>
-                </param>
-                
-                <param name="replacementMap">
-                  <param name="arg">
-                    <param name="Subject">
-                      <param name="value"></param>
-                    </param>
-                  </param>
-                </param>
-                
-                <module name="StaticSelect" layoutPanel="panel_row1_col1_grp6">
-                  <param name="settingToCreate">cond3</param>
-                  <param name="searchWhenChanged">False</param>
-                  <param name="staticFieldsToDisplay">
-                    <list>
-                      <param name="label"> </param>
-                      <param name="value">*</param>
-                    </list>
-                    <list>
-                      <param name="label">AND</param>
-                      <param name="value">AND</param>
-                    </list>
-                    <list>
-                      <param name="label">OR</param>
-                      <param name="value">OR</param>
-                    </list>
-                    <list>
-                      <param name="label">NOT</param>
-                      <param name="value">NOT</param>
-                    </list>
-                  </param>
-                  
-                  <module name="ConvertToIntention">
-                    <param name="settingToConvert">cond3</param>
-                    <param name="intention">
-                      <param name="name">stringreplace</param>
-                      <param name="arg">
-                        <param name="cond3">
-                          <param name="value">$target$</param>
-                          <param name="default"></param>
-                          <param name="fillOnEmpty">True</param>
-                        </param>
-                      </param>
-                    </param>
-                    
-                    <module name="ExtendedFieldSearch" layoutPanel="panel_row1_col1_grp1">
-                      <param name="field">Attachment:</param>
-                      <param name="intention">
-                      <param name="name">stringreplace</param>
-                        <param name="arg">
-                          <param name="Attachment">
-                            <param name="fillOnEmpty">True</param>
-                            <param name="prefix">[search eventtype=cisco_esa attachmentname="</param>
-                            <param name="suffix">" | stats count by host, mid | fields host, mid | format maxresults=1000]</param>
-                            <param name="default"></param>
-                          </param>
-                        </param>
-                      </param>
-                      
-                      <param name="replacementMap">
-                        <param name="arg">
-                          <param name="Attachment">
-                            <param name="value"></param>
-                          </param>
-                        </param>
-                      </param>
-                      
-                      <module name="TimeRangePicker" layoutPanel="panel_row1_col1_grp1">
-                        <param name="label">Time range:</param>
-                        <param name="default">Last 30 days</param>
-                        <param name="searchWhenChanged">True</param>
-                        
-                        <module name="SubmitButton" layoutPanel="panel_row1_col1_grp1">
-                          <param name="label">Search</param>
-                          <param name="allowSoftSubmit">True</param>
-                          
-                          <module name="ResultsHeader" layoutPanel="panel_row2_col1" group="Events List">
-                            <param name="entityLabel">events</param>
-                            <param name="entityName">events</param>
-                            <module name="JobProgressIndicator">
-                              <module name="Paginator">
-                                <param name="count">10</param>
-                                <param name="entityName">results</param>
-                                <param name="maxPages">10</param>
-                                <module name="SimpleResultsTable">
-                                </module>
-                                <module name="ViewRedirectorLink">
-                                  <param name="viewTarget">flashtimeline</param>
-                                  <param name="label">View full results</param>
-                                  <param name="popup">True</param>
-                                </module>
-                              </module>
-                            </module>
-                          </module>
-                        </module>
-                      </module> <!-- TimeRangePicker -->
-                      
-                    </module>
-                  </module>
-                </module>
-              </module>
-            </module>
-          </module>
-        </module>
-      </module>
-    </module>
-  </module>
-</module> <!-- HiddenSearch -->
-</view>
+  <row>
+    <!-- show results as a table -->
+    <table>
+      <title>Email Tracking Results</title>
+      <searchPostProcess>head limit=$n$ | eval threat_reason=coalesce( case(spam_verdict="positive","spam", vof_verdict="positive", "outbreak", av_verdict="positive","viral",quarantine_reason!="","quarantined"), "clean") | table _time, mailfrom mailto subject threat_reason src_host sender_reputation policy_direction | sort -_time</searchPostProcess>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">row</option>
+      <option name="count">50</option>
+    </table>
+  </row>  
+</form>

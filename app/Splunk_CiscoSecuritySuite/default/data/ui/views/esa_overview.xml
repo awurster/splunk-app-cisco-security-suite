@@ -173,6 +173,25 @@
       <option name="charting.axisTitleX.text">Rcpt To</option>
       <option name="charting.axisTitleY.text">Message Count</option>
     </chart>
+    <chart>
+      <title>Top Email Threats</title>
+      <searchString>sourcetype=cisco_esa | eval threat_reason=coalesce( case(spam_verdict="positive","spam", vof_verdict="positive", "outbreak", av_verdict="positive","viral",quarantine_reason!="","quarantined"), "clean") | top threat_reason | where threat_reason!="clean"</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">pie</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
   </row>
   <row>
     <chart>
