@@ -129,17 +129,6 @@
   </row>
   <row>
     <table>
-      <title>Client Mappings</title>
-      <searchString>search sourcetype=cisco_wsa_* | `fill-user-id` | search user_id=$id$ | stats values(c_ip) AS "Addresses Seen" values(cs_user_agent) AS "User Agents Seen" count by user_id</searchString>
-      <earliestTime>$earliest$</earliestTime>
-      <latestTime>$latest$</latestTime>
-      <option name="wrap">true</option>
-      <option name="rowNumbers">false</option>
-      <option name="dataOverlayMode">heatmap</option>
-      <option name="drilldown">cell</option>
-      <option name="count">10</option>
-    </table>
-    <table>
       <title>Bandwidth Usage</title>
       <searchString>sourcetype=cisco_wsa_* | `fill-user-id` | search user_id=$id$ | stats sum(bytes_in) as "size" count by dest_domain | sort -size | `resize-bytes("size", size)`</searchString>
       <earliestTime>$earliest$</earliestTime>
@@ -157,6 +146,43 @@
       <option name="charting.layout.splitSeries">0</option>
       <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
       <option name="charting.legend.placement">right</option>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">cell</option>
+      <option name="count">10</option>
+    </table>
+    <table>
+      <title>Search Queries</title>
+      <searchString>eventtype=ironport_proxy cs_url_stem="*search*" | `fill-user-id` | search user_id=$id$ | rex field=cs_url_query "(?&lt;query_arg&gt;(video|query|search|q|search_query|p))(=|/)(?&lt;query_string&gt;[^\?&amp;]+)[\?&amp;]?" | rex field=query_string mode=sed "s/(\+|%20)/ /g" | stats count by query_string dest_domain | sort - count | rename query_string AS "Search Terms" dest_domain AS "Search Provider"</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">column</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">row</option>
+      <option name="count">10</option>
+    </table>
+  </row>
+  <row>
+    <table>
+      <title>Client Mappings</title>
+      <searchString>search sourcetype=cisco_wsa_* | `fill-user-id` | search user_id=$id$ | stats values(c_ip) AS "Addresses Seen" values(cs_user_agent) AS "User Agents Seen" count by user_id</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
       <option name="wrap">true</option>
       <option name="rowNumbers">false</option>
       <option name="dataOverlayMode">heatmap</option>

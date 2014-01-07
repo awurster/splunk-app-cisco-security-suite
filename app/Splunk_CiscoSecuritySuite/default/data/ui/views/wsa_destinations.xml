@@ -131,30 +131,4 @@
       <option name="count">10</option>
     </table>
   </row>
-  <row>
-    <table>
-      <title>Top Search Queries</title>
-      <searchString>eventtype=ironport_proxy cs_url_stem="*search*" | rex field=cs_url_query "(?&lt;query_arg&gt;(video|query|search|q|search_query|p))(=|/)(?&lt;query_string&gt;[^\?&amp;]+)[\?&amp;]?" | rex field=query_string mode=sed "s/(\+|%20)/ /g" | stats count by query_string dest_domain | sort - count | rename query_string AS "Search Terms" dest_domain AS "Search Provider"</searchString>
-      <earliestTime>$earliest$</earliestTime>
-      <latestTime>$latest$</latestTime>
-      <option name="charting.axisTitleX.visibility">visible</option>
-      <option name="charting.axisTitleY.visibility">visible</option>
-      <option name="charting.axisX.scale">linear</option>
-      <option name="charting.axisY.scale">linear</option>
-      <option name="charting.chart">column</option>
-      <option name="charting.chart.nullValueMode">gaps</option>
-      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
-      <option name="charting.chart.stackMode">default</option>
-      <option name="charting.chart.style">shiny</option>
-      <option name="charting.drilldown">all</option>
-      <option name="charting.layout.splitSeries">0</option>
-      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
-      <option name="charting.legend.placement">right</option>
-      <option name="wrap">true</option>
-      <option name="rowNumbers">false</option>
-      <option name="dataOverlayMode">heatmap</option>
-      <option name="drilldown">row</option>
-      <option name="count">10</option>
-    </table>
-  </row>
 </form>
