@@ -26,8 +26,8 @@
     <!--<input type="dropdown" token="f_action" searchWhenChanged="true">
       <label>Action</label>
       <default>*</default>
-      <choice value="*">All</choice>-->
-    </input>
+      <choice value="*">All</choice>
+    </input>-->
     <input type="text" token="f_mta" searchWhenChanged="true">
       <label>MTA Address or Hostname</label>
       <default>*</default>

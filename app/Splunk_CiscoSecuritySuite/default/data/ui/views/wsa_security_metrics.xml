@@ -1,0 +1,87 @@
+<form stylesheet="application.css">
+  <label>Security Metrics</label>
+  <fieldset autoRun="true" submitButton="false">
+    <input type="time" searchWhenChanged="true">
+      <default>
+        <earliestTime>rt-30m</earliestTime>
+        <latestTime>rt</latestTime>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <chart>
+      <title>User Agents</title>
+      <searchString>sourcetype="cisco_wsa*" | lookup uas_lookup http_user_agent | stats count by ua_family</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">collapsed</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">pie</option>
+      <option name="charting.chart.nullValueMode">zero</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">bottom</option>
+      <option name="charting.axisTitleX.text">RPS by Host</option>
+      <option name="charting.axisTitleY.text">RPS by Host</option>
+    </chart>
+    <chart>
+      <title>Average Request Size over Time</title>
+      <searchString>sourcetype=cisco_wsa* | bucket _time span=5m | timechart avg(bytes_in) as "size" by http_method</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">collapsed</option>
+      <option name="charting.axisTitleY.text">Request Size</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">area</option>
+      <option name="charting.chart.nullValueMode">zero</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">none</option>
+    </chart>
+  </row>
+  <row>
+    <single>
+      <title>Unique User IDs</title>
+      <searchString>sourcetype=cisco_wsa* | `fill-user-id` | stats dc(user_id)</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">none</option>
+      <option name="drilldown">row</option>
+      <option name="count">10</option>
+      <option name="linkView">search</option>
+    </single>
+    <single>
+      <title>Unique IPs Seen</title>
+      <searchString>sourcetype=cisco_wsa* | stats dc(c_ip)</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+    </single>
+  </row>
+  <row>
+    <table>
+      <title>URL Analyses</title>
+      <searchString>sourcetype=cisco_wsa* | `fill-user-id` | `resize-bytes-num("data", bytes_in)` | eval url_length=len(cs_url) | stats count by url_length dest_host x_wbrs_score user_id identity access_policy data units | sort -url_length -data</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">row</option>
+      <option name="count">10</option>
+    </table>
+  </row>
+</form>

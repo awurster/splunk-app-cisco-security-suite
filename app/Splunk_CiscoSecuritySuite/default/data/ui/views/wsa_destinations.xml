@@ -1,4 +1,4 @@
-<form>
+<form stylesheet="application.css">
   <label>Web Destinations</label>
   <fieldset autoRun="true" submitButton="false">
     <input type="time" searchWhenChanged="true">
@@ -8,46 +8,6 @@
       </default>
     </input>
   </fieldset>
-  <row>
-    <chart>
-      <title>Destination by Country</title>
-      <searchString>sourcetype=cisco_wsa_* | iplocation dest_ip | top Country</searchString>
-      <earliestTime>$earliest$</earliestTime>
-      <latestTime>$latest$</latestTime>
-      <option name="charting.axisTitleX.visibility">visible</option>
-      <option name="charting.axisTitleY.visibility">visible</option>
-      <option name="charting.axisX.scale">linear</option>
-      <option name="charting.axisY.scale">linear</option>
-      <option name="charting.chart">pie</option>
-      <option name="charting.chart.nullValueMode">gaps</option>
-      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
-      <option name="charting.chart.stackMode">default</option>
-      <option name="charting.chart.style">shiny</option>
-      <option name="charting.drilldown">all</option>
-      <option name="charting.layout.splitSeries">0</option>
-      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
-      <option name="charting.legend.placement">right</option>
-    </chart>
-    <chart>
-      <title>Destination by Bandwidth</title>
-      <searchString>sourcetype=cisco_wsa_* | stats sum(bytes_in) as "size" by dest_domain | sort -size | `resize-bytes-num("size", size)`</searchString>
-      <earliestTime>$earliest$</earliestTime>
-      <latestTime>$latest$</latestTime>
-      <option name="charting.axisTitleX.visibility">visible</option>
-      <option name="charting.axisTitleY.visibility">visible</option>
-      <option name="charting.axisX.scale">linear</option>
-      <option name="charting.axisY.scale">linear</option>
-      <option name="charting.chart">pie</option>
-      <option name="charting.chart.nullValueMode">gaps</option>
-      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
-      <option name="charting.chart.stackMode">default</option>
-      <option name="charting.chart.style">shiny</option>
-      <option name="charting.drilldown">all</option>
-      <option name="charting.layout.splitSeries">0</option>
-      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
-      <option name="charting.legend.placement">right</option>
-    </chart>
-  </row>
   <row>
     <chart>
       <title>Top Domains</title>
@@ -89,6 +49,25 @@
     </chart>
   </row>
   <row>
+    <chart>
+      <title>Destination by Country</title>
+      <searchString>sourcetype=cisco_wsa_* | iplocation dest_ip | top Country</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">pie</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
     <map>
       <title>Global Destinations by City</title>
       <searchString>sourcetype=cisco_wsa_* | iplocation dest_ip | geostats latfield=lat longfield=lon count by City</searchString>
@@ -100,5 +79,52 @@
       <option name="mapping.map.center">(14.5833, 120.9667)</option>
       <option name="mapping.map.zoom">2</option>
     </map>
+  </row>
+  <row>
+    <table>
+      <title>Top Search Queries</title>
+      <searchString>eventtype=ironport_proxy cs_url_stem="*search*" | rex field=cs_url_query "(?&lt;query_arg&gt;(video|query|search|q|search_query|p))(=|/)(?&lt;query_string&gt;[^\?&amp;]+)[\?&amp;]?" | rex field=query_string mode=sed "s/(\+|%20)/ /g" | stats count by query_string dest_domain | sort - count | rename query_string AS "Search Terms" dest_domain AS "Search Provider"</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">column</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">row</option>
+      <option name="count">10</option>
+    </table>
+  </row>
+  <row>
+    <chart>
+      <title>Destination by Bandwidth</title>
+      <searchString>sourcetype=cisco_wsa_* | stats sum(bytes_in) as "size" by dest_domain | sort -size | `resize-bytes-num("size", size)`</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">pie</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
   </row>
 </form>

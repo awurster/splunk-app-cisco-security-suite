@@ -1,0 +1,55 @@
+<form stylesheet="application.css">
+  <label>Web Security Risk Profile</label>
+  <description/>
+  <fieldset autoRun="true" submitButton="false">
+    <input type="time" searchWhenChanged="true">
+      <default>
+        <earliestTime>-30d@d</earliestTime>
+        <latestTime>now</latestTime>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <chart>
+      <title>User Agents</title>
+      <searchString>sourcetype="cisco_wsa*" | lookup uas_lookup http_user_agent | stats count by ua_name</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">collapsed</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">pie</option>
+      <option name="charting.chart.nullValueMode">zero</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">bottom</option>
+      <option name="charting.axisTitleX.text">RPS by Host</option>
+      <option name="charting.axisTitleY.text">RPS by Host</option>
+    </chart>
+    <chart>
+      <title>Average Request Size over Time</title>
+      <searchString>sourcetype=cisco_wsa* | bucket _time span=5m | timechart avg(bytes_in) as "size" by http_method</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">collapsed</option>
+      <option name="charting.axisTitleY.text">Request Size</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">area</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">none</option>
+    </chart>
+  </row>
+</form>
