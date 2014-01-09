@@ -31,70 +31,6 @@
       <option name="charting.axisTitleY.text">RPS by Host</option>
     </chart>
     <chart>
-      <title>Bandwidth Consumption</title>
-      <searchString>sourcetype=cisco_wsa* | eval mbytes_in = bytes_in / 1024 / 1024 | timechart sum(mbytes_in) as "bandwidth in MB"</searchString>
-      <earliestTime>$earliest$</earliestTime>
-      <latestTime>$latest$</latestTime>
-      <option name="charting.axisTitleX.visibility">collapsed</option>
-      <option name="charting.axisTitleY.text">Bandwidth in MB</option>
-      <option name="charting.axisTitleY.visibility">visible</option>
-      <option name="charting.axisX.scale">linear</option>
-      <option name="charting.axisY.scale">linear</option>
-      <option name="charting.chart">column</option>
-      <option name="charting.chart.nullValueMode">gaps</option>
-      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
-      <option name="charting.chart.stackMode">default</option>
-      <option name="charting.chart.style">shiny</option>
-      <option name="charting.drilldown">all</option>
-      <option name="charting.layout.splitSeries">0</option>
-      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
-      <option name="charting.legend.placement">none</option>
-    </chart>
-  </row>
-  <row>
-    <chart>
-      <title>Transaction Distribution by Access Policy</title>
-      <searchString>sourcetype=cisco_wsa* | timechart usenull=f count by access_policy</searchString>
-      <earliestTime>$earliest$</earliestTime>
-      <latestTime>$latest$</latestTime>
-      <option name="charting.axisTitleX.visibility">collapsed</option>
-      <option name="charting.axisTitleY.visibility">visible</option>
-      <option name="charting.axisX.scale">linear</option>
-      <option name="charting.axisY.scale">linear</option>
-      <option name="charting.chart">column</option>
-      <option name="charting.chart.nullValueMode">gaps</option>
-      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
-      <option name="charting.chart.stackMode">stacked100</option>
-      <option name="charting.chart.style">shiny</option>
-      <option name="charting.drilldown">all</option>
-      <option name="charting.layout.splitSeries">0</option>
-      <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
-      <option name="charting.legend.placement">bottom</option>
-      <option name="charting.axisTitleY.text">% Transactions</option>
-    </chart>
-  </row>
-  <row>
-    <chart>
-      <title>Request Times</title>
-      <searchString>sourcetype=cisco_wsa_*  | eval s_duration=duration/1000  | timechart avg(s_duration) as "avg duration"</searchString>
-      <earliestTime>$earliest$</earliestTime>
-      <latestTime>$latest$</latestTime>
-      <option name="charting.axisTitleX.visibility">collapsed</option>
-      <option name="charting.axisTitleY.visibility">visible</option>
-      <option name="charting.axisX.scale">linear</option>
-      <option name="charting.axisY.scale">linear</option>
-      <option name="charting.chart">column</option>
-      <option name="charting.chart.nullValueMode">gaps</option>
-      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
-      <option name="charting.chart.stackMode">default</option>
-      <option name="charting.chart.style">shiny</option>
-      <option name="charting.drilldown">all</option>
-      <option name="charting.layout.splitSeries">0</option>
-      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
-      <option name="charting.legend.placement">none</option>
-      <option name="charting.axisTitleY.text">Avg Duration (seconds)</option>
-    </chart>
-    <chart>
       <title>Cache Performance</title>
       <searchString>sourcetype=cisco_wsa* cache!="-" | timechart usenull=f count by cache</searchString>
       <earliestTime>$earliest$</earliestTime>
@@ -117,61 +53,24 @@
   </row>
   <row>
     <chart>
-      <title>SSL Traffic Load</title>
-      <searchString>sourcetype=cisco_wsa_* | eval num=lower(dest_port) | eval protocol="tcp" | lookup services protocol port AS dest_port OUTPUT service | eval method=if(cs_url_scheme="tunnel",service,cs_url_scheme) | stats count by method</searchString>
+      <title>Transactions by Access Policy</title>
+      <searchString>sourcetype=cisco_wsa* | timechart usenull=f count by access_policy</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
-      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleX.visibility">collapsed</option>
       <option name="charting.axisTitleY.visibility">visible</option>
       <option name="charting.axisX.scale">linear</option>
       <option name="charting.axisY.scale">linear</option>
-      <option name="charting.chart">pie</option>
+      <option name="charting.chart">column</option>
       <option name="charting.chart.nullValueMode">gaps</option>
       <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
-      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.stackMode">stacked100</option>
       <option name="charting.chart.style">shiny</option>
       <option name="charting.drilldown">all</option>
       <option name="charting.layout.splitSeries">0</option>
-      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
-      <option name="charting.legend.placement">right</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+      <option name="charting.legend.placement">bottom</option>
+      <option name="charting.axisTitleY.text">% Transactions</option>
     </chart>
-    <chart>
-      <title>Session Type</title>
-      <searchString>sourcetype=cisco_wsa_* | eval session_type=if(cs_username="-","Unauthenticated","Authenticated") | stats count by session_type</searchString>
-      <earliestTime>$earliest$</earliestTime>
-      <latestTime>$latest$</latestTime>
-      <option name="charting.axisTitleX.visibility">visible</option>
-      <option name="charting.axisTitleY.visibility">visible</option>
-      <option name="charting.axisX.scale">linear</option>
-      <option name="charting.axisY.scale">linear</option>
-      <option name="charting.chart">pie</option>
-      <option name="charting.chart.nullValueMode">gaps</option>
-      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
-      <option name="charting.chart.stackMode">default</option>
-      <option name="charting.chart.style">shiny</option>
-      <option name="charting.drilldown">all</option>
-      <option name="charting.layout.splitSeries">0</option>
-      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
-      <option name="charting.legend.placement">right</option>
-    </chart>
-    <chart>
-      <title>Connection Types</title>
-      <searchString>sourcetype=cisco_wsa_* cs_url_port="443" | eval conn_type=if(cs_url_scheme="tunnel","Explicit","Transparent") | stats count by conn_type</searchString>
-      <earliestTime>$earliest$</earliestTime>
-      <latestTime>$latest$</latestTime>
-      <option name="charting.axisTitleX.visibility">visible</option>
-      <option name="charting.axisTitleY.visibility">visible</option>
-      <option name="charting.axisX.scale">linear</option>
-      <option name="charting.axisY.scale">linear</option>
-      <option name="charting.chart">pie</option>
-      <option name="charting.chart.nullValueMode">gaps</option>
-      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
-      <option name="charting.chart.stackMode">default</option>
-      <option name="charting.chart.style">shiny</option>
-      <option name="charting.drilldown">all</option>
-      <option name="charting.layout.splitSeries">0</option>
-      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
-      <option name="charting.legend.placement">right</option>
-    </chart>
-  </row>
+  </row>  
 </form>
