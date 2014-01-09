@@ -1,5 +1,5 @@
 <form stylesheet="application.css">
-  <label>Web Tracking</label>
+  <label>Web User Tracking</label>
   <description>Track Web Security transactions</description>
   <fieldset autoRun="true" submitButton="false">
     <input type="text" token="id">
@@ -18,7 +18,7 @@
     </input>
     <input type="time" searchWhenChanged="true">
       <default>
-        <earliestTime>-24h@h</earliestTime>
+        <earliestTime>-30d@d</earliestTime>
         <latestTime>now</latestTime>
       </default>
     </input>
@@ -26,7 +26,7 @@
   <row>
     <chart>
       <title>Timechart of Results</title>
-      <searchString>sourcetype=cisco_wsa_* | `fill-user-id` | search user_id=$id$ | timechart count by action usenull=f</searchString>
+      <searchString>sourcetype=cisco_wsa_* | `fill-user-id` | search user_id=$id$ | eval action=if((action="error" AND http_result="TCP_DENIED/407"),"auth fail",action) | timechart count by action usenull=f</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>$n$ Raw Events, Filtered by user_id: $id$<option name="charting.axisTitleX.visibility">collapsed</option>
       <option name="charting.axisTitleY.text"># of Transactions</option>
@@ -45,7 +45,7 @@
     </chart>
     <chart>
       <title>Blocked Transaction Summary</title>
-      <searchString>sourcetype="cisco_wsa_*"  action!="allow" | `fill-user-id` | search user_id=$id$ | stats count by cause</searchString>
+      <searchString>sourcetype="cisco_wsa_*"  action!="allow" | `fill-user-id` | search user_id=$id$ | eval cause=if((action="error" AND http_result="TCP_DENIED/407"),"auth fail",cause) | stats count by cause</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="displayRowNumbers">true</option>
@@ -90,7 +90,7 @@
     </chart>
     <chart>
       <title>Web Security Threats</title>
-      <searchString>sourcetype="cisco_wsa_*" threat_reason!="-" | `fill-user-id` | search user_id=$id$ | stats count by threat_reason</searchString>
+      <searchString>sourcetype="cisco_wsa_*" threat_reason!="-" | `fill-user-id` | search user_id=$id$ | eval threat_reason=if((action="error" AND http_result="TCP_DENIED/407"),"auth failure",threat_reason) | stats count by threat_reason</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="charting.axisTitleX.visibility">visible</option>
@@ -180,7 +180,7 @@
   <row>
     <table>
       <title>Client Mappings</title>
-      <searchString>search sourcetype=cisco_wsa_* | `fill-user-id` | search user_id=$id$ | stats values(c_ip) AS "Addresses Seen" values(cs_user_agent) AS "User Agents Seen" count by user_id</searchString>
+      <searchString>sourcetype=cisco_wsa_* | eval user_id=if(cs_username="-","["+c_ip+"]",user_id) | search user_id=$id$ | lookup uas_lookup http_user_agent | stats values(c_ip) AS "Addresses Seen" values(ua_name) AS "User Agents Seen" values(os_family) AS "OS" values(http_user_agent) AS "Full UA String" count by user_id | rename user_id as "User IDs Seen"</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="wrap">true</option>

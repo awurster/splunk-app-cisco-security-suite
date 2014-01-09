@@ -11,7 +11,7 @@
   <row>
     <chart>
       <title>Web Security Events</title>
-      <searchString>sourcetype="cisco_wsa_*" | timechart count by action usenull=f</searchString>
+      <searchString>sourcetype="cisco_wsa_*" | eval action=if((action="error" AND http_result="TCP_DENIED/407"),"auth fail",action) | timechart count by action usenull=f</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="count">10</option>
@@ -33,7 +33,7 @@
     </chart>
     <chart>
       <title>Blocked Transaction Summary</title>
-      <searchString>sourcetype="cisco_wsa_*"  action!="allow" | stats count by cause</searchString>
+      <searchString>sourcetype="cisco_wsa_*"  action!="allow" | eval cause=if((action="error" AND http_result="TCP_DENIED/407"),"auth fail",cause) | stats count by cause</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="wrap">true</option>
@@ -77,7 +77,7 @@
     </chart>
     <chart>
       <title>Web Security Threats</title>
-      <searchString>sourcetype="cisco_wsa_*" threat_reason!="-" | stats count by threat_reason</searchString>
+      <searchString>sourcetype="cisco_wsa_*" threat_reason!="-" | eval threat_reason=if((action="error" AND http_result="TCP_DENIED/407"),"auth failure",threat_reason) | stats count by threat_reason</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="charting.axisTitleX.visibility">visible</option>
@@ -115,26 +115,6 @@
     </chart>
   </row>
   <row>
-    <chart>
-      <title>Traffic Mix by Reputation</title>
-      <searchString>sourcetype="cisco_wsa_*" | eval reputation=if(x_wbrs_score="-","unknown",x_wbrs_score) | bucket reputation bins=21 | stats count by reputation</searchString>
-      <earliestTime>$earliest$</earliestTime>
-      <latestTime>$latest$</latestTime>
-      <option name="charting.axisTitleX.visibility">visible</option>
-      <option name="charting.axisTitleY.text"># of Transactions</option>
-      <option name="charting.axisTitleY.visibility">visible</option>
-      <option name="charting.axisX.scale">linear</option>
-      <option name="charting.axisY.scale">linear</option>
-      <option name="charting.chart">column</option>
-      <option name="charting.chart.nullValueMode">gaps</option>
-      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
-      <option name="charting.chart.stackMode">default</option>
-      <option name="charting.chart.style">shiny</option>
-      <option name="charting.drilldown">all</option>
-      <option name="charting.layout.splitSeries">0</option>
-      <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
-      <option name="charting.legend.placement">none</option>
-    </chart>
     <table>
       <title>Top Destination Domains by Bytecount</title>
       <searchString>eventtype=ironport_proxy  | stats sum(bytes_in) as "size" by dest_domain | sort -size | `resize-bytes-num("size", size)`</searchString>
@@ -179,6 +159,28 @@
       <option name="charting.legend.placement">bottom</option>
       <option name="charting.axisTitleY.text">Transactions</option>
       <option name="charting.axisTitleX.text">Username or IP Address</option>
+    </chart>
+  </row>
+  <row>
+    <chart>
+      <title>Traffic Mix by Reputation</title>
+      <searchString>sourcetype="cisco_wsa_*" | eval reputation=if(x_wbrs_score="-","unknown",x_wbrs_score) | bucket reputation bins=21 | stats count by reputation</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.text"># of Transactions</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">column</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+      <option name="charting.legend.placement">none</option>
     </chart>
   </row>
   <row>

@@ -30,8 +30,12 @@
 
     <collection label="Web Security">
         <view name="wsa_overview" />
+        <divider />
         <view name="wsa_proxy_perf" />
         <view name="wsa_destinations" />
+        <divider />
+        <view name="wsa_security_metrics" />
+        <view name="web_security_risk_profile" />
         <divider />
         <view name="wsa_tracking" />
         <divider />

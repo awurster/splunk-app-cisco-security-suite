@@ -1,5 +1,5 @@
 <form stylesheet="application.css">
-  <label>Web Proxy Performance</label>
+  <label>Proxy Performance</label>
   <fieldset autoRun="true" submitButton="false">
     <input type="time" searchWhenChanged="true">
       <default>

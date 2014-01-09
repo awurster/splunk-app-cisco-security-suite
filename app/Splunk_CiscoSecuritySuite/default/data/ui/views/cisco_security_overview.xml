@@ -9,15 +9,13 @@
       </default>
     </input>
   </fieldset>
-  
   <searchTemplate>sourcetype=cisco* | eval src=coalesce(src_ip,src_host) | eval dest=coalesce(dest_ip,dest_host) | stats count by host product eventtype sourcetype src dest _time</searchTemplate>
-  
   <row>
     <map>
       <title>Global Security Events</title>
       <!-- use 'src_ip!="10.0.0.0/8" src_ip!="172.12.0.0/12" src_ip!="192.168.0.0/16" src_ip!="0.0.0.0/32' to filter out local IP events -->
-      <!-- <searchString>sourcetype=cisco* src_ip!="10.0.0.0/8" src_ip!="172.12.0.0/12" src_ip!="192.168.0.0/16" src_ip!="0.0.0.0/32" | eval src=coalesce(src_ip,src_host) | eval dest=coalesce(dest_ip,dest_host) | iplocation src | geostats latfield=lat longfield=lon count by product</searchString>-->
-      <searchName>Global Security Events</searchName>
+      <searchString>sourcetype=cisco* src_ip!="10.0.0.0/8" src_ip!="172.12.0.0/12" src_ip!="192.168.0.0/16" src_ip!="0.0.0.0/32" | iplocation src | geostats latfield=lat longfield=lon count by Country</searchString>
+      <!--<searchName>Global Security Events</searchName>-->
       <!-- use named search for now because postprocess doesnt seem to like the maps :/ . -->
       <!--<searchPostProcess>search src_ip!="10.0.0.0/8" src_ip!="172.12.0.0/12" src_ip!="192.168.0.0/16" src_ip!="0.0.0.0/32" | iplocation src | geostats latfield=lat longfield=lon count by product</searchPostProcess>-->
       <!-- use custom colors -->
@@ -31,6 +29,29 @@
       <option name="mapping.map.zoom">2</option>
     </map>
     <chart>
+      <title>Top Threat Reason</title>
+      <searchString>sourcetype=cisco* threat_reason!="-" | eval threat_reason=if((action="error" AND http_result="TCP_DENIED/407"),"auth failure",threat_reason) | eval threat_reason="[".product."] ".threat_reason | top limit=10 threat_reason</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <!-- use a separate search for now because some sources don't have threat reason yet -->
+      <!--<searchPostProcess>top limit=10 threat_reason</searchPostProcess>-->
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">pie</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+  </row>
+  <row>
+    <chart>
       <title>Security Events Statistcs</title>
       <searchString>sourcetype=cisco* | timechart useother=true usenull=f limit=4 count by product | sort -count</searchString>
       <!-- <searchPostProcess>timechart useother=true usenull=f limit=4 count by product | sort -count</searchPostProcess>-->
@@ -42,7 +63,7 @@
       <option name="charting.axisLabelsX.visibility">hide</option>
       <option name="charting.axisLabelsY.visibility">show</option>
       <option name="charting.axisLabelsX.majorLabelVisibility">show</option>
-      <option name="charting.axisLabelsY.majorLabelVisibility">show</option>       
+      <option name="charting.axisLabelsY.majorLabelVisibility">show</option>
       <option name="charting.axisX.scale">linear</option>
       <option name="charting.axisY.scale">log</option>
       <option name="charting.chart">line</option>
@@ -99,10 +120,8 @@
       <option name="charting.legend.placement">right</option>
     </chart>
     <chart>
-      <title>Top Threat Reason</title>
-      <!-- use a separate search for now because some sources don't have threat reason yet -->
-      <searchString>sourcetype=cisco* threat_reason!="-" | top limit=10 threat_reason</searchString>
-      <!--<searchPostProcess>top limit=10 threat_reason</searchPostProcess>-->
+      <title>Top Services</title>
+      <searchString>sourcetype=cisco* | eval port=coalesce(dest_port,src_port) | lookup services port OUTPUT service | eval service=coalesce(service,"unknown") | top service limit=10</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="charting.axisTitleX.visibility">visible</option>
@@ -118,7 +137,7 @@
       <option name="charting.layout.splitSeries">0</option>
       <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
       <option name="charting.legend.placement">right</option>
-    </chart>    
+    </chart>
   </row>
   <row>
     <table>
@@ -158,5 +177,4 @@
       <option name="count">10</option>
     </table>
   </row>
-  
 </form>

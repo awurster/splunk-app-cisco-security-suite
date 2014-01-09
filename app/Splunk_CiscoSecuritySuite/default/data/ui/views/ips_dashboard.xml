@@ -52,7 +52,7 @@
   <row>
     <table>
       <title>Top Signatures</title>
-      <searchString>sourcetype="cisco_ips_syslog" | transaction maxevents=2 maxspan=5m eventid | eval attack_count=if(isnotnull(summary_count),summary_count,1) | stats sum(attack_count) as count by sig_type description | sort - count | head 10</searchString>
+      <searchString>sourcetype="cisco_ips_syslog" | transaction maxevents=2 maxspan=5m eventid | eval attack_count=if(isnotnull(summary_count),summary_count,1) | stats sum(attack_count) as count sparkline by severity sig_type description | sort - count | head 10</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="wrap">true</option>
@@ -61,6 +61,8 @@
       <option name="drilldown">row</option>
       <option name="count">10</option>
     </table>
+  </row>
+  <row>
     <chart>
       <title>Top Attacker</title>
       <searchString>sourcetype="cisco_ips_syslog" | transaction maxevents=2 maxspan=5m eventid | eval attack_count=if(isnotnull(summary_count),summary_count,1) | chart sum(attack_count) as count by attacker</searchString>

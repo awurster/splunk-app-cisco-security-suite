@@ -1,18 +1,18 @@
 <form stylesheet="application.css">
-  <label>Web Security Risk Profile</label>
+  <label>Security Risk Profile</label>
   <description/>
   <fieldset autoRun="true" submitButton="false">
     <input type="time" searchWhenChanged="true">
       <default>
-        <earliestTime>-30d@d</earliestTime>
+        <earliestTime>-60m@m</earliestTime>
         <latestTime>now</latestTime>
       </default>
     </input>
   </fieldset>
   <row>
-    <chart>
-      <title>User Agents</title>
-      <searchString>sourcetype="cisco_wsa*" | lookup uas_lookup http_user_agent | stats count by ua_name</searchString>
+    <table>
+      <title>Suspicious User Agents</title>
+      <searchString>sourcetype="cisco_wsa*" | lookup uas_lookup http_user_agent | where ua_name="unknown" | stats sum(bytes_in) AS size avg(x_wbrs_score) AS avg_wbrs count by http_user_agent | sort - sum(bytes_in) - count | `resize-bytes-num("Bandwidth Used", size)` | eval avg_wbrs=round(avg_wbrs,1) | rename avg_wbrs AS "Avg WBRS" | fields - size</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="charting.axisTitleX.visibility">collapsed</option>
@@ -30,10 +30,15 @@
       <option name="charting.legend.placement">bottom</option>
       <option name="charting.axisTitleX.text">RPS by Host</option>
       <option name="charting.axisTitleY.text">RPS by Host</option>
-    </chart>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">row</option>
+      <option name="count">10</option>
+    </table>
     <chart>
-      <title>Average Request Size over Time</title>
-      <searchString>sourcetype=cisco_wsa* | bucket _time span=5m | timechart avg(bytes_in) as "size" by http_method</searchString>
+      <title>Outbound Protocols</title>
+      <searchString>sourcetype=cisco_wsa_* | eval num=lower(dest_port) | eval protocol="tcp" | lookup services protocol port AS dest_port OUTPUT service | eval method=if(cs_url_scheme="tunnel",service." / ".dest_port." [tunneled]",cs_url_scheme." / ".dest_port." [direct]") | stats count by method</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="charting.axisTitleX.visibility">collapsed</option>
@@ -41,7 +46,7 @@
       <option name="charting.axisTitleY.visibility">visible</option>
       <option name="charting.axisX.scale">linear</option>
       <option name="charting.axisY.scale">linear</option>
-      <option name="charting.chart">area</option>
+      <option name="charting.chart">pie</option>
       <option name="charting.chart.nullValueMode">gaps</option>
       <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
       <option name="charting.chart.stackMode">stacked</option>
@@ -51,5 +56,18 @@
       <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
       <option name="charting.legend.placement">none</option>
     </chart>
+  </row>
+  <row>
+    <table>
+      <title>Multiple User Authentications</title>
+      <searchString>sourcetype=cisco_wsa_* user_id!="" | chart values(user_id) AS "Users Seen" dc(user_id) AS "Number of User IDs" by c_ip | rename c_ip AS "IP Address"</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">row</option>
+      <option name="count">10</option>
+    </table>
   </row>
 </form>
