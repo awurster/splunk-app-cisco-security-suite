@@ -215,7 +215,7 @@
     </chart>
     <table>
       <title>Interesting Subjects</title>
-      <searchString>sourcetype="cisco_esa" | transaction icid mid | stats count by subject | sort -count</searchString>
+      <searchString>sourcetype="cisco_esa" | rex field=subject "^((FW|RE)\:\s+)?(?&lt;subject_root&gt;.*)$" | stats count by subject_root | sort -count</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="wrap">true</option>

@@ -10,9 +10,130 @@
     </input>
   </fieldset>
   <row>
+    <chart>
+      <title>Authentication Failures</title>
+      <searchString>sourcetype=cisco_wsa_* (action="error" AND http_result="TCP_DENIED/407") | `fill-user-id` | stats count by user_id | rename count AS "# failures"</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">bar</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">none</option>
+    </chart>
+    <chart>
+      <title>Outbound Protocols and Connection Methods</title>
+      <searchString>sourcetype=cisco_wsa_* | eval num=lower(dest_port) | eval protocol="tcp" | lookup services protocol port AS dest_port OUTPUT service | eval method=if(cs_url_scheme="tunnel",service." / ".dest_port." [tunneled]",cs_url_scheme." / ".dest_port." [direct]") | stats count by method</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">collapsed</option>
+      <option name="charting.axisTitleY.text">Request Size</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">pie</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">none</option>
+    </chart>
+  </row>
+  <row>
+    <table>
+      <title>Data Leakage</title>
+      <searchString>sourcetype="cisco_wsa*" | `fill-user-id` | stats sum(bytes_out) AS size_out by dest_host x_webcat_code_full | sort -size_out  | `resize-bytes("size_out", size_out)`</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">row</option>
+      <option name="count">10</option>
+    </table>
+    <table>
+      <title>Persistent Connections</title>
+      <searchString>sourcetype=cisco_wsa* action!="block" AND action!="error" | `fill-user-id` | transaction user_id, dest_host | stats sum(duration) as conn_time avg(x_wbrs_score) AS "reputation" sum(bytes_in) AS size_in sum(bytes_out) AS size_out by dest_host |`resize-bytes("size_in", size_in)` | `resize-bytes("size_out", size_out)`  | eval conn_time=strftime(conn_time, "%H:%M:%S") | eval reputation=round(reputation,1) |  sort -conn_time -size_out</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">bar</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">row</option>
+      <option name="count">10</option>
+    </table>
+    <table>
+      <title>Uncategorized Sites</title>
+      <searchString>sourcetype=cisco_wsa_squid (x_wbrs_score="ns" OR x_wbrs_score&lt;0) action!="block" | regex dest_domain="\d+" | stats count by host</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">column</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">row</option>
+      <option name="count">10</option>
+    </table>
+  </row>
+  <row>
+    <chart>
+      <title>Rare User Agents</title>
+      <searchString>sourcetype="cisco_wsa*" | lookup uas_lookup http_user_agent | rare http_user_agent</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">pie</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
     <table>
       <title>Suspicious User Agents</title>
-      <searchString>sourcetype="cisco_wsa*" | lookup uas_lookup http_user_agent | where ua_name="unknown" | stats sum(bytes_in) AS size avg(x_wbrs_score) AS avg_wbrs count by http_user_agent | sort - sum(bytes_in) - count | `resize-bytes-num("Bandwidth Used", size)` | eval avg_wbrs=round(avg_wbrs,1) | rename avg_wbrs AS "Avg WBRS" | fields - size</searchString>
+      <searchString>sourcetype="cisco_wsa*" | lookup uas_lookup http_user_agent | where ua_name="unknown" | stats sum(bytes_in) AS size_in sum(bytes_out) AS size_out avg(x_wbrs_score) AS avg_wbrs count by http_user_agent | `resize-bytes("size_in", size_in)` | `resize-bytes("size_out", size_out)` | eval avg_wbrs=round(avg_wbrs,1) | rename avg_wbrs AS "Avg WBRS" | sort -size_in -size_out -count</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="charting.axisTitleX.visibility">collapsed</option>
@@ -36,26 +157,43 @@
       <option name="drilldown">row</option>
       <option name="count">10</option>
     </table>
-    <chart>
-      <title>Outbound Protocols</title>
-      <searchString>sourcetype=cisco_wsa_* | eval num=lower(dest_port) | eval protocol="tcp" | lookup services protocol port AS dest_port OUTPUT service | eval method=if(cs_url_scheme="tunnel",service." / ".dest_port." [tunneled]",cs_url_scheme." / ".dest_port." [direct]") | stats count by method</searchString>
+  </row>
+  <row>
+    <table>
+      <title>Long URLs</title>
+      <searchString>sourcetype=cisco_wsa* | `fill-user-id` | eval url_length=len(cs_url) | search url_length&gt;=200 | `shorten(cs_url_short,cs_url,64,"...")` | stats count by url_length dest_domain cs_url_short | sort -url_length</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
-      <option name="charting.axisTitleX.visibility">collapsed</option>
-      <option name="charting.axisTitleY.text">Request Size</option>
+      <option name="charting.axisTitleX.visibility">visible</option>
       <option name="charting.axisTitleY.visibility">visible</option>
       <option name="charting.axisX.scale">linear</option>
       <option name="charting.axisY.scale">linear</option>
-      <option name="charting.chart">pie</option>
+      <option name="charting.chart">column</option>
       <option name="charting.chart.nullValueMode">gaps</option>
       <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
-      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.stackMode">default</option>
       <option name="charting.chart.style">shiny</option>
       <option name="charting.drilldown">all</option>
       <option name="charting.layout.splitSeries">0</option>
       <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
-      <option name="charting.legend.placement">none</option>
-    </chart>
+      <option name="charting.legend.placement">right</option>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">row</option>
+      <option name="count">10</option>
+    </table>
+    <table>
+      <title>Probing</title>
+      <searchString>sourcetype=cisco_wsa_* (http_method="OPTIONS" OR http_method="HEAD") | `fill-user-id` | stats count by c_ip user_id http_method | sort -count</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">row</option>
+      <option name="count">10</option>
+    </table>
   </row>
   <row>
     <table>

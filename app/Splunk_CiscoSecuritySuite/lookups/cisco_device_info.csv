@@ -20,4 +20,4 @@ cisco-smc,cisco:smc,IDS,network,Cisco,CTD,Cyber Threat Defense
 cisco-vsg,cisco:vsg,Firewall,network,Cisco,VSG,Virtual Security Gateway
 cisco-3750x,cisco:3750x,Switch,switch,Cisco,SW,Cisco Switch
 cisco-n1k,cisco:n1k,Switch,switch,Cisco,N1K,Nexus 1000v
-eStreamer,sourcefire:sdc,IDS,network,Sourcefire,SDC,Sourcefire Defense Center
+estreamer,sourcefire:sdc,IDS,network,Sourcefire,SDC,Sourcefire Defense Center

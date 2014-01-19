@@ -1,5 +1,5 @@
 <form stylesheet="application.css">
-  <label>Firewall Overview</label>
+  <label>Mail Gateway Performance</label>
   <description/>
   <fieldset autoRun="true" submitButton="false">
     <input type="time" searchWhenChanged="true">
@@ -11,15 +11,98 @@
   </fieldset>
   <row>
     <chart>
-      <title>Firewall Events</title>
-      <searchString>eventtype=cisco_firewall* | timechart count by action usenull=f</searchString>
+      <title>Injections (ICIDs)</title>
+      <searchString>sourcetype=cisco_esa | timechart dc(icid) AS "Incoming Connections"  by host</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
-      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleX.visibility">collapsed</option>
       <option name="charting.axisTitleY.visibility">visible</option>
       <option name="charting.axisX.scale">linear</option>
       <option name="charting.axisY.scale">linear</option>
-      <option name="charting.chart">column</option>
+      <option name="charting.chart">area</option>
+      <option name="charting.chart.nullValueMode">zero</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">bottom</option>
+      <option name="charting.axisTitleX.text">RPS by Host</option>
+      <option name="charting.axisTitleY.text"># Connections</option>
+    </chart>
+    <chart>
+      <title>Messages (MIDs)</title>
+      <searchString>sourcetype=cisco_esa | timechart dc(mid) AS "Messages"  by host</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">collapsed</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">area</option>
+      <option name="charting.chart.nullValueMode">zero</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+      <option name="charting.legend.placement">bottom</option>
+      <option name="charting.axisTitleY.text"># Messages</option>
+    </chart>
+    <chart>
+      <title>Deliveries (DCIDs)</title>
+      <searchString>sourcetype=cisco_esa | timechart dc(dcid) AS "Delivery Connections"  by host</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">collapsed</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">area</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">bottom</option>
+      <option name="charting.axisTitleY.text"># Connections</option>
+    </chart>
+  </row>
+  <row>
+    <chart>
+      <title>Message Sizes Over Time</title>
+      <searchString>sourcetype=cisco_esa | timechart avg(message_size) AS avg_size | eval avg_size=round((avg_size/1024/1024),2)</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">collapsed</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">area</option>
+      <option name="charting.chart.nullValueMode">zero</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+      <option name="charting.legend.placement">bottom</option>
+      <option name="charting.axisTitleY.text">Avg Message Size (MB)</option>
+    </chart>
+    <chart>
+      <title>Message Size Distribution</title>
+      <searchString>sourcetype=cisco_esa | eval message_size=round(message_size/1024/1024,2)  |  stats count by message_size</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">collapsed</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">area</option>
       <option name="charting.chart.nullValueMode">gaps</option>
       <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
       <option name="charting.chart.stackMode">stacked</option>
@@ -27,108 +110,8 @@
       <option name="charting.drilldown">all</option>
       <option name="charting.layout.splitSeries">0</option>
       <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
-      <option name="charting.legend.placement">right</option>
+      <option name="charting.legend.placement">bottom</option>
+      <option name="charting.axisTitleY.text">Avg Message Size (MB)</option>
     </chart>
-    <chart>
-      <title>Drop Reason</title>
-      <searchString>eventtype=cisco_firewall* action=*blocked* | top cause</searchString>
-      <earliestTime>$earliest$</earliestTime>
-      <latestTime>$latest$</latestTime>
-      <option name="charting.axisTitleX.visibility">collapsed</option>
-      <option name="charting.axisTitleY.visibility">visible</option>
-      <option name="charting.axisX.scale">linear</option>
-      <option name="charting.axisY.scale">linear</option>
-      <option name="charting.chart">bar</option>
-      <option name="charting.chart.nullValueMode">gaps</option>
-      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
-      <option name="charting.chart.stackMode">default</option>
-      <option name="charting.chart.style">shiny</option>
-      <option name="charting.drilldown">all</option>
-      <option name="charting.layout.splitSeries">0</option>
-      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
-      <option name="charting.legend.placement">none</option>
-      <option name="charting.axisTitleY.text">Number of Drops</option>
-    </chart>
-  </row>
-  <row>
-    <chart>
-      <title>Top Source</title>
-      <searchString>eventtype=cisco_firewall* | top src_ip</searchString>
-      <earliestTime>$earliest$</earliestTime>
-      <latestTime>$latest$</latestTime>
-      <option name="charting.axisTitleX.visibility">visible</option>
-      <option name="charting.axisTitleY.visibility">visible</option>
-      <option name="charting.axisX.scale">linear</option>
-      <option name="charting.axisY.scale">linear</option>
-      <option name="charting.chart">pie</option>
-      <option name="charting.chart.nullValueMode">gaps</option>
-      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
-      <option name="charting.chart.stackMode">default</option>
-      <option name="charting.chart.style">shiny</option>
-      <option name="charting.drilldown">all</option>
-      <option name="charting.layout.splitSeries">0</option>
-      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
-      <option name="charting.legend.placement">right</option>
-    </chart>
-    <chart>
-      <title>Top Destination</title>
-      <searchString>eventtype=cisco_firewall* | top dest_ip</searchString>
-      <earliestTime>$earliest$</earliestTime>
-      <latestTime>$latest$</latestTime>
-      <option name="charting.axisTitleX.visibility">visible</option>
-      <option name="charting.axisTitleY.visibility">visible</option>
-      <option name="charting.axisX.scale">linear</option>
-      <option name="charting.axisY.scale">linear</option>
-      <option name="charting.chart">pie</option>
-      <option name="charting.chart.nullValueMode">gaps</option>
-      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
-      <option name="charting.chart.stackMode">default</option>
-      <option name="charting.chart.style">shiny</option>
-      <option name="charting.drilldown">all</option>
-      <option name="charting.layout.splitSeries">0</option>
-      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
-      <option name="charting.legend.placement">right</option>
-    </chart>
-    <chart>
-      <title>Top Protocols</title>
-      <searchString>eventtype=cisco_firewall* | eval protocol=lower(transport) | lookup services protocol port AS dest_port OUTPUT service  | stats count by service</searchString>
-      <earliestTime>$earliest$</earliestTime>
-      <latestTime>$latest$</latestTime>
-      <option name="charting.chart">pie</option>
-      <option name="charting.legend.placement">none</option>
-      <option name="charting.axisTitleX.visibility">visible</option>
-      <option name="charting.axisTitleY.visibility">visible</option>
-      <option name="charting.axisX.scale">linear</option>
-      <option name="charting.axisY.scale">linear</option>
-      <option name="charting.chart.nullValueMode">gaps</option>
-      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
-      <option name="charting.chart.stackMode">default</option>
-      <option name="charting.chart.style">shiny</option>
-      <option name="charting.drilldown">all</option>
-      <option name="charting.layout.splitSeries">0</option>
-      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
-    </chart>
-  </row>
-  <row>
-    <table>
-      <title>Real-Time Firewall Events</title>
-      <searchString>sourcetype=cisco_asa | table _time, host, src_interface, src_ip, src_port, src_sgt, dest_interface, dest_ip, dest_port, action | sort -_time</searchString>
-      <earliestTime>$earliest$</earliestTime>
-      <latestTime>$latest$</latestTime>
-      <option name="list.drilldown">full</option>
-      <option name="list.wrap">1</option>
-      <option name="maxLines">5</option>
-      <option name="raw.drilldown">full</option>
-      <option name="rowNumbers">false</option>
-      <option name="table.drilldown">1</option>
-      <option name="table.sortDirection">asc</option>
-      <option name="table.wrap">1</option>
-      <option name="type">list</option>
-      <option name="wrap">true</option>
-      <option name="displayRowNumbers">false</option>
-      <option name="dataOverlayMode">none</option>
-      <option name="drilldown">row</option>
-      <option name="count">20</option>
-    </table>
   </row>
 </form>

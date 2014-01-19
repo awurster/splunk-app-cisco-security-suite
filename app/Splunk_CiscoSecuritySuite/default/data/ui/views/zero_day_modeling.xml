@@ -1,0 +1,87 @@
+<form stylesheet="application.css">
+  <label>Zero Day Modeling</label>
+  <description>Model 0-day threats.</description>
+  <fieldset autoRun="true" submitButton="false">
+    <!--<input type="dropdown" token="username" searchWhenChanged="true">
+      <label>Select a User:</label>
+      <prefix>user_id="</prefix>
+      <suffix>"</suffix>
+      <default>*</default>
+      <choice value="*">All</choice>
+      <populatingSearch fieldForValue="username" fieldForLabel="username" earliest="-24h" latest="now">
+        <![CDATA[sourcetype=cisco* | stats count by user_id]]>
+      </populatingSearch>
+    </input>-->
+    <input type="text" token="f_src">
+      <label>Enter an internal Network or Host Address</label>
+      <default>*</default>
+    </input>
+    <input type="text" token="f_user_id">
+      <label>Enter a User ID</label>
+      <default>*</default>
+    </input>
+    <input type="text" token="f_cs_url">
+      <label>Enter a full or partial URL</label>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="f_sourcetype" searchWhenChanged="true">
+      <label>Select a Sourcetype:</label>
+      <prefix>"</prefix>
+      <suffix>"</suffix>
+      <default>*</default>
+      <choice value="*">All</choice>
+      <populatingSearch fieldForValue="sourcetype" fieldForLabel="sourcetype" earliest="-24h" latest="now">
+        <![CDATA[sourcetype=cisco* | stats count by sourcetype]]>
+      </populatingSearch>
+    </input>
+    <input type="dropdown" token="f_num_events" searchWhenChanged="true">
+      <label>Number of Raw Events:</label>
+      <default>100</default>
+      <choice value="0">All</choice>
+      <choice value="10">10</choice>
+      <choice value="100">100</choice>
+      <choice value="1000">1000</choice>
+      <choice value="10000">10000</choice>
+    </input>
+    <input type="time" searchWhenChanged="true">
+      <default>
+        <earliestTime>-24h@h</earliestTime>
+        <latestTime>now</latestTime>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <chart>
+      <title>Security Events</title>
+      <searchString>sourcetype=$f_sourcetype$ (src_ip=$f_src$ OR src_host=$f_src$) cs_url=$f_cs_url$ | `fill-user-id` | search user_id=$f_user_id$ | transaction src_ip user_id cs_url| timechart count by product</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.chart">column</option>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart.nullValueMode">gaps</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
+  </row>
+  <row>
+    <table>
+      <title>Raw Events</title>
+      <searchString>sourcetype=$f_sourcetype$ (src_ip=$f_src$ OR src_host=$f_src$) cs_url=$f_cs_url$ | `fill-user-id` | search user_id=$f_user_id$ | transaction src_ip user_id cs_url | table _time, user_id, src_ip, product, host, cs_url, action, cause, threat_reason | head limit=$f_num_events$</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="wrap">true</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">cell</option>
+      <option name="count">0</option>
+      <option name="rowNumbers">false</option>
+    </table>
+  </row>
+</form>

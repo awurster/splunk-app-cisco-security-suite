@@ -9,20 +9,20 @@
       </default>
     </input>
   </fieldset>
-  <searchTemplate>sourcetype=cisco* | eval src=coalesce(src_ip,src_host) | eval dest=coalesce(dest_ip,dest_host) | stats count by host product eventtype sourcetype src dest _time</searchTemplate>
+  <searchTemplate>(sourcetype=cisco* OR sourcetype=eStreamer) | fillnull value=- product eventtype threat_reason src_port dest_port src_ip dest_ip | eval product=if(sourcetype="eStreamer","SFIRE",product) | eval host=if(sourcetype="eStreamer",sensor,host) | eval eventtype=if(sourcetype="eStreamer","sourcefire",eventtype) | eval threat_reason=coalesce(rec_type_simple,sig_type,threat_reason) | eval threat_reason=if((action="error" AND http_result="TCP_DENIED/407"),"auth failure",threat_reason) | search threat_reason!="-" | eval threat_reason="[".product."] ".threat_reason | eval dest_port=coalesce(dest_port,target_port) | eval src_port=coalesce(src_port,attacker_port) | stats count by host product eventtype sourcetype threat_reason src_ip src_port dest_ip dest_port _time</searchTemplate>
   <row>
     <map>
       <title>Global Security Events</title>
       <!-- use 'src_ip!="10.0.0.0/8" src_ip!="172.12.0.0/12" src_ip!="192.168.0.0/16" src_ip!="0.0.0.0/32' to filter out local IP events -->
-      <searchString>sourcetype=cisco* src_ip!="10.0.0.0/8" src_ip!="172.12.0.0/12" src_ip!="192.168.0.0/16" src_ip!="0.0.0.0/32" | iplocation src | geostats latfield=lat longfield=lon count by Country</searchString>
+      <searchString>(sourcetype=cisco* OR sourcetype=eStreamer) src_ip!="10.0.0.0/8" src_ip!="172.12.0.0/12" src_ip!="192.168.0.0/16" src_ip!="0.0.0.0/32" | iplocation src_ip | geostats latfield=lat longfield=lon count by Country</searchString>
       <!--<searchName>Global Security Events</searchName>-->
       <!-- use named search for now because postprocess doesnt seem to like the maps :/ . -->
       <!--<searchPostProcess>search src_ip!="10.0.0.0/8" src_ip!="172.12.0.0/12" src_ip!="192.168.0.0/16" src_ip!="0.0.0.0/32" | iplocation src | geostats latfield=lat longfield=lon count by product</searchPostProcess>-->
       <!-- use custom colors -->
-      <option name="mapping.seriesColors">[0x9C4B4B,0xD76034,0xAFAE2E,0x4C674F,0x9E7395]</option>
+      <!--<option name="mapping.seriesColors">[0x9C4B4B,0xD76034,0xAFAE2E,0x4C674F,0x9E7395]</option>-->
       <!-- adjust marker opacity and size range -->
       <option name="mapping.markerLayer.markerOpacity">0.8</option>
-      <option name="mapping.markerLayer.markerMinSize">5</option>
+      <option name="mapping.markerLayer.markerMinSize">15</option>
       <option name="mapping.markerLayer.markerMaxSize">50</option>
       <!-- set initial map center and zoom level -->
       <option name="mapping.map.center">(14.5833, 120.9667)</option>
@@ -30,7 +30,8 @@
     </map>
     <chart>
       <title>Top Threat Reason</title>
-      <searchString>sourcetype=cisco* threat_reason!="-" | eval threat_reason=if((action="error" AND http_result="TCP_DENIED/407"),"auth failure",threat_reason) | eval threat_reason="[".product."] ".threat_reason | top limit=10 threat_reason</searchString>
+      <!--<searchString>(sourcetype=cisco* OR sourcetype=eStreamer) | eval product=if(sourcetype="eStreamer","SFIRE",product) | eval threat_reason=coalesce(rec_type_simple,sig_type,threat_reason) | eval threat_reason=if((action="error" AND http_result="TCP_DENIED/407"),"auth failure",threat_reason) | search threat_reason!="-" | eval threat_reason="[".product."] ".threat_reason | top limit=10 threat_reason</searchString>-->
+      <searchPostProcess>top limit=10 threat_reason</searchPostProcess>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <!-- use a separate search for now because some sources don't have threat reason yet -->
@@ -47,34 +48,7 @@
       <option name="charting.drilldown">all</option>
       <option name="charting.layout.splitSeries">0</option>
       <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
-      <option name="charting.legend.placement">right</option>
-    </chart>
-  </row>
-  <row>
-    <chart>
-      <title>Security Events Statistcs</title>
-      <searchString>sourcetype=cisco* | timechart useother=true usenull=f limit=4 count by product | sort -count</searchString>
-      <!-- <searchPostProcess>timechart useother=true usenull=f limit=4 count by product | sort -count</searchPostProcess>-->
-      <earliestTime>$earliest$</earliestTime>
-      <latestTime>$latest$</latestTime>
-      <option name="charting.chart.stackMode">default</option>
-      <option name="charting.axisTitleX.visibility">collapsed</option>
-      <option name="charting.axisTitleY.visibility">collapsed</option>
-      <option name="charting.axisLabelsX.visibility">hide</option>
-      <option name="charting.axisLabelsY.visibility">show</option>
-      <option name="charting.axisLabelsX.majorLabelVisibility">show</option>
-      <option name="charting.axisLabelsY.majorLabelVisibility">show</option>
-      <option name="charting.axisX.scale">linear</option>
-      <option name="charting.axisY.scale">log</option>
-      <option name="charting.chart">line</option>
-      <option name="charting.chart.nullValueMode">connect</option>
-      <option name="charting.chart.style">shiny</option>
-      <option name="charting.drilldown">all</option>
       <option name="height">400</option>
-      <option name="charting.height">400</option>
-      <option name="charting.layout.splitSeries">1</option>
-      <option name="charting.layout.splitSeriesMargin">(4,4,4,8)</option>
-      <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
       <option name="charting.legend.placement">right</option>
     </chart>
   </row>
@@ -82,7 +56,7 @@
     <chart>
       <title>Top Sources</title>
       <!--<searchString>sourcetype=cisco* | eval src=coalesce(src_ip,src_host) | eval dest=coalesce(dest_ip,dest_host) | top limit=10 src</searchString>-->
-      <searchPostProcess>top limit=10 src</searchPostProcess>
+      <searchPostProcess>top limit=10 src_ip</searchPostProcess>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="charting.axisTitleX.visibility">visible</option>
@@ -102,7 +76,7 @@
     <chart>
       <title>Top Destinations</title>
       <!--<searchString>sourcetype=cisco* | eval src=coalesce(src_ip,src_host) | eval dest=coalesce(dest_ip,dest_host) | top limit=10 dest</searchString>-->
-      <searchPostProcess>top limit=10 dest</searchPostProcess>
+      <searchPostProcess>top limit=10 dest_ip</searchPostProcess>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="charting.axisTitleX.visibility">visible</option>
@@ -121,7 +95,8 @@
     </chart>
     <chart>
       <title>Top Services</title>
-      <searchString>sourcetype=cisco* | eval port=coalesce(dest_port,src_port) | lookup services port OUTPUT service | eval service=coalesce(service,"unknown") | top service limit=10</searchString>
+      <!--<searchString>sourcetype=cisco* | eval port=coalesce(dest_port,src_port) | lookup services port OUTPUT service | eval service=coalesce(service,"unknown") | top service limit=10</searchString>-->
+      <searchPostProcess>eval port=coalesce(dest_port,src_port) | lookup services port OUTPUT service | top service limit=10</searchPostProcess>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="charting.axisTitleX.visibility">visible</option>
@@ -176,5 +151,33 @@
       <option name="drilldown">row</option>
       <option name="count">10</option>
     </table>
+  </row>
+  <row>
+    <chart>
+      <title>Security Events Statistcs</title>
+      <!-- <searchString>sourcetype=cisco* | timechart useother=true usenull=f limit=4 count by product | sort -count</searchString>-->
+      <searchPostProcess>timechart useother=true usenull=f count by product | sort -count</searchPostProcess>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.chart.stackMode">default</option>
+      <option name="charting.axisTitleX.visibility">collapsed</option>
+      <option name="charting.axisTitleY.visibility">collapsed</option>
+      <option name="charting.axisLabelsX.visibility">hide</option>
+      <option name="charting.axisLabelsY.visibility">show</option>
+      <option name="charting.axisLabelsX.majorLabelVisibility">show</option>
+      <option name="charting.axisLabelsY.majorLabelVisibility">show</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">log</option>
+      <option name="charting.chart">line</option>
+      <option name="charting.chart.nullValueMode">connect</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="height">400</option>
+      <option name="charting.height">400</option>
+      <option name="charting.layout.splitSeries">1</option>
+      <option name="charting.layout.splitSeriesMargin">(4,4,4,8)</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+      <option name="charting.legend.placement">right</option>
+    </chart>
   </row>
 </form>

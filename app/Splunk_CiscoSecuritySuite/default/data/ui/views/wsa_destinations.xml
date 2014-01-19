@@ -1,5 +1,5 @@
 <form stylesheet="application.css">
-  <label>Web Destinations</label>
+  <label>Destinations</label>
   <fieldset autoRun="true" submitButton="false">
     <input type="time" searchWhenChanged="true">
       <default>
@@ -101,15 +101,48 @@
   </row>
   <row>
     <chart>
-      <title>Destination by Bandwidth</title>
-      <searchString>sourcetype=cisco_wsa_* | stats sum(bytes_in) as "size" by dest_domain | sort -size | `resize-bytes-num("size", size)`</searchString>
+      <title>Bandwidth by Category</title>
+      <searchString>sourcetype=cisco_wsa_* |  eval bytes_in=bytes_in/1024/1024 | timechart sum(bytes_in) AS "size in MB" by x_webcat_code_full usenull=f</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="charting.axisTitleX.visibility">visible</option>
       <option name="charting.axisTitleY.visibility">visible</option>
       <option name="charting.axisX.scale">linear</option>
       <option name="charting.axisY.scale">linear</option>
-      <option name="charting.chart">pie</option>
+      <option name="charting.chart">area</option>
+      <option name="charting.chart.nullValueMode">zero</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+      <option name="charting.legend.placement">right</option>
+      <option name="charting.axisTitleY.text">size in MB</option>
+    </chart>
+  </row>
+  <row>
+    <table>
+      <title>Bandwidth by Domain</title>
+      <searchString>sourcetype=cisco_wsa_* | stats sum(bytes_in) as "size_in" sum(bytes_out) as "size_out" count by dest_domain | sort -size_in -size_out | `resize-bytes("size_in", size_in)` | `resize-bytes("size_out", size_out)` | rename count AS "traffic volume"</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">row</option>
+      <option name="count">10</option>
+    </table>
+    <table>
+      <title>Bandwidth by Host</title>
+      <searchString>sourcetype=cisco_wsa_* | stats sum(bytes_in) as "size_in" sum(bytes_out) as "size_out" count by dest_host | sort -size_in -size_out | `resize-bytes("size_in", size_in)` | `resize-bytes("size_out", size_out)` | rename count AS "traffic volume"</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">visible</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">column</option>
       <option name="charting.chart.nullValueMode">gaps</option>
       <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
       <option name="charting.chart.stackMode">default</option>
@@ -118,12 +151,6 @@
       <option name="charting.layout.splitSeries">0</option>
       <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
       <option name="charting.legend.placement">right</option>
-    </chart>
-    <table>
-      <title>Top Bandwidth Sites</title>
-      <searchString>sourcetype=cisco_wsa_* | stats sum(bytes_in) as "size" by dest_domain | sort -size | `resize-bytes-num("size", size)`</searchString>
-      <earliestTime>$earliest$</earliestTime>
-      <latestTime>$latest$</latestTime>
       <option name="wrap">true</option>
       <option name="rowNumbers">false</option>
       <option name="dataOverlayMode">heatmap</option>

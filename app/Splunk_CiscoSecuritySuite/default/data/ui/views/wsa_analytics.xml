@@ -1,0 +1,40 @@
+<form stylesheet="application.css" script="custom_viz.js">
+  <label>Analytics</label>
+  <description/>
+  <fieldset autoRun="true" submitButton="false">
+    <input type="time" searchWhenChanged="true">
+      <default>
+        <earliestTime>-30d@d</earliestTime>
+        <latestTime>now</latestTime>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <chart>
+      <title>Search Providers</title>
+      <searchString>eventtype=ironport_proxy cs_url_stem="*search*" | rex field=cs_url_query "(?&lt;query_arg&gt;(video|query|search|q|search_query|p))(=|/)(?&lt;query_string&gt;[^\?&amp;]+)[\?&amp;]?" | rex field=query_string "(?&lt;search_term&gt;\w+)" max_match=0 | mvexpand search_term | stats count by search_term dest_domain | top useother=f dest_domain | rename dest_domain AS "Search Provider"</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="charting.axisTitleX.visibility">collapsed</option>
+      <option name="charting.axisTitleY.visibility">visible</option>
+      <option name="charting.axisX.scale">linear</option>
+      <option name="charting.axisY.scale">linear</option>
+      <option name="charting.chart">pie</option>
+      <option name="charting.chart.nullValueMode">zero</option>
+      <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+      <option name="charting.chart.stackMode">stacked</option>
+      <option name="charting.chart.style">shiny</option>
+      <option name="charting.drilldown">all</option>
+      <option name="charting.layout.splitSeries">0</option>
+      <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+      <option name="charting.legend.placement">bottom</option>
+      <option name="charting.axisTitleX.text">RPS by Host</option>
+      <option name="charting.axisTitleY.text">RPS by Host</option>
+    </chart>
+    <html>
+      <h2>Search Terms</h2>
+      <div id="tagcloud-search" class="splunk-manager splunk-searchmanager " data-require="splunkjs/mvc/searchmanager" data-options="{                     &quot;app&quot;: &quot;simple_xml_examples&quot;,                     &quot;preview&quot;: true,                     &quot;search&quot;: &quot;eventtype=ironport_proxy cs_url_stem=&quot;*search*&quot; | rex field=cs_url_query &quot;(?&lt;query_arg&gt;(video|query|search|q|search_query|p))(=|/)(?&lt;query_string&gt;[^\?&amp;]+)[\?&amp;]?&quot; | rex field=query_string &quot;(?&lt;search_term&gt;\w+)&quot; max_match=0 | mvexpand search_term | stats count by search_term&quot;,                     &quot;earliest_time&quot;: &quot;-24h&quot;                 }"/>
+      <div id="tagcloud" class="splunk-view" data-require="app/simple_xml_examples/components/tagcloud/tagcloud" data-options="{                     &quot;minFontSize&quot;: 14,                     &quot;maxFontSize&quot;: 55,                     &quot;managerid&quot;: &quot;tagcloud-search&quot;,                     &quot;valueField&quot;: &quot;search_term&quot;,                     &quot;labelField&quot;: &quot;search_term&quot;                  }"/>
+    </html>
+  </row>
+</form>

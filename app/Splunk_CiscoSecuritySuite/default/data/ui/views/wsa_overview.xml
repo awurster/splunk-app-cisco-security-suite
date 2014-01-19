@@ -58,7 +58,7 @@
   <row>
     <chart>
       <title>URL Category Mix</title>
-      <searchString>eventtype=ironport_proxy | stats count by x_webcat_code_full</searchString>
+      <searchString>eventtype=ironport_proxy | eval x_webcat_code_full=if(match(x_webcat_code_abbr,"C_.*"),"[CUSTOM] ".x_webcat_code_full,x_webcat_code_full) |  top x_webcat_code_full</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="charting.axisTitleX.visibility">visible</option>
@@ -117,7 +117,7 @@
   <row>
     <table>
       <title>Top Destination Domains by Bytecount</title>
-      <searchString>eventtype=ironport_proxy  | stats sum(bytes_in) as "size" by dest_domain | sort -size | `resize-bytes-num("size", size)`</searchString>
+      <searchString>sourcetype=cisco_wsa_* | stats sum(bytes_in) as "size_in" sum(bytes_out) as "size_out" count by dest_domain | sort -size_in -size_out | `resize-bytes("size_in", size_in)` | `resize-bytes("size_out", size_out)` | rename count AS "traffic volume"</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="charting.axisTitleX.visibility">visible</option>
@@ -135,13 +135,13 @@
       <option name="charting.legend.placement">right</option>
       <option name="wrap">true</option>
       <option name="rowNumbers">false</option>
-      <option name="dataOverlayMode">none</option>
+      <option name="dataOverlayMode">heatmap</option>
       <option name="drilldown">row</option>
       <option name="count">10</option>
     </table>
     <chart>
       <title>Top Users</title>
-      <searchString>sourcetype=cisco_wsa* | eval user=if(cs_username="-",c_ip,user_id) | stats count(eval(action="block")) as "Blocked" count(eval(action="allow")) as "Allowed" by user | sort 10 -Allowed -Blocked</searchString>
+      <searchString>sourcetype=cisco_wsa* | `fill-user-id` | stats count(eval(action="block")) as "Blocked" count(eval(action="allow")) as "Allowed" by user_id | sort 10 -Allowed -Blocked</searchString>
       <earliestTime>$earliest$</earliestTime>
       <latestTime>$latest$</latestTime>
       <option name="charting.axisTitleX.visibility">visible</option>

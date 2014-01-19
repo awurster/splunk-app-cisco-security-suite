@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<nav color="#29688A">
+<nav color="#29688A" search_view="search">
     <collection label="Splunk for Cisco Security">
         <view name="cisco_security_overview" default="true"/>
         <!--  these pages need restyling -->
@@ -21,6 +21,8 @@
     <collection label="Email Security">
         <view name="esa_overview" />
         <divider />
+        <view name="esa_security_metrics" />
+        <view name="esa_performance" />
         <view name="esa_form_search" />
         <divider />
         <collection label="Email Searches &amp; Reports">

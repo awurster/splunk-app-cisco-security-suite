@@ -93,6 +93,19 @@
   </row>
   <row>
     <table>
+      <title>Referrals Analyses</title>
+      <searchString>sourcetype=cisco_wsa* | eval ref_length=len(referer) | rex field=referer "[^:/?#]+://(?&lt;ref_host&gt;[\w\d\.-]+)/" | stats values(referer) count by ref_host  dest_host x_wbrs_score | rename x_wbrs_score AS "original score", ref_host AS "referring host", dest_host AS "original dest", x_wbrs_score AS "original WBRS" | sort - count</searchString>
+      <earliestTime>$earliest$</earliestTime>
+      <latestTime>$latest$</latestTime>
+      <option name="wrap">true</option>
+      <option name="rowNumbers">false</option>
+      <option name="dataOverlayMode">heatmap</option>
+      <option name="drilldown">row</option>
+      <option name="count">5</option>
+    </table>
+  </row>
+  <row>
+    <table>
       <title>URL Analyses</title>
       <searchString>sourcetype=cisco_wsa* | `fill-user-id` | `resize-bytes-num("data", bytes_in)` | eval url_length=len(cs_url) | stats count by url_length dest_host x_wbrs_score user_id identity access_policy data units | sort -url_length -data</searchString>
       <earliestTime>$earliest$</earliestTime>
